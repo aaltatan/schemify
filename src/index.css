@@ -1,1 +1,115 @@
 @import "tailwindcss";
+
+/* Drafting sheet: cool paper and ink-blue in light, blueprint navy in dark. */
+:root {
+  color-scheme: light;
+  --paper: oklch(0.962 0.008 245);
+  --grid: oklch(0.925 0.012 245);
+  --sheet: oklch(0.99 0.003 245);
+  --sunken: oklch(0.945 0.01 245);
+  --rule: oklch(0.87 0.012 245);
+  --rule-strong: oklch(0.74 0.018 250);
+  --ink: oklch(0.26 0.035 258);
+  --ink-muted: oklch(0.47 0.03 255);
+  --accent: oklch(0.47 0.16 260);
+  --accent-hover: oklch(0.41 0.16 260);
+  --accent-soft: oklch(0.93 0.035 258);
+  --on-accent: oklch(0.99 0.005 245);
+  --danger: oklch(0.52 0.19 27);
+  --danger-soft: oklch(0.95 0.03 27);
+  --ok: oklch(0.5 0.12 160);
+
+  /* the JSON panel is the blueprint in both themes */
+  --print: oklch(0.255 0.06 258);
+  --print-rule: oklch(0.34 0.06 258);
+  --print-ink: oklch(0.93 0.02 240);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: oklch(0.205 0.035 258);
+    --grid: oklch(0.235 0.04 258);
+    --sheet: oklch(0.245 0.04 258);
+    --sunken: oklch(0.215 0.038 258);
+    --rule: oklch(0.33 0.04 258);
+    --rule-strong: oklch(0.45 0.045 255);
+    --ink: oklch(0.94 0.012 245);
+    --ink-muted: oklch(0.74 0.03 248);
+    --accent: oklch(0.78 0.11 245);
+    --accent-hover: oklch(0.84 0.09 245);
+    --accent-soft: oklch(0.33 0.07 255);
+    --on-accent: oklch(0.2 0.04 258);
+    --danger: oklch(0.74 0.15 25);
+    --danger-soft: oklch(0.3 0.06 25);
+    --ok: oklch(0.78 0.12 160);
+    --print: oklch(0.165 0.035 258);
+    --print-rule: oklch(0.28 0.04 258);
+    --print-ink: oklch(0.92 0.02 240);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: oklch(0.205 0.035 258);
+  --grid: oklch(0.235 0.04 258);
+  --sheet: oklch(0.245 0.04 258);
+  --sunken: oklch(0.215 0.038 258);
+  --rule: oklch(0.33 0.04 258);
+  --rule-strong: oklch(0.45 0.045 255);
+  --ink: oklch(0.94 0.012 245);
+  --ink-muted: oklch(0.74 0.03 248);
+  --accent: oklch(0.78 0.11 245);
+  --accent-hover: oklch(0.84 0.09 245);
+  --accent-soft: oklch(0.33 0.07 255);
+  --on-accent: oklch(0.2 0.04 258);
+  --danger: oklch(0.74 0.15 25);
+  --danger-soft: oklch(0.3 0.06 25);
+  --ok: oklch(0.78 0.12 160);
+  --print: oklch(0.165 0.035 258);
+  --print-rule: oklch(0.28 0.04 258);
+  --print-ink: oklch(0.92 0.02 240);
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-sheet: var(--sheet);
+  --color-sunken: var(--sunken);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-ok: var(--ok);
+  --color-print: var(--print);
+  --color-print-rule: var(--print-rule);
+  --color-print-ink: var(--print-ink);
+}
+
+body {
+  background-color: var(--paper);
+  /* graph paper, 24px squares */
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--ink);
+  caret-color: var(--accent);
+  scrollbar-color: var(--rule-strong) transparent;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background-color: var(--accent-soft);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

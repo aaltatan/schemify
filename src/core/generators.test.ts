@@ -87,12 +87,15 @@ describe("primitives", () => {
   });
 
   it("parses enum choices", () => {
-    expect(run({ type: "enum", choices: "red, green" }).schema).toEqual({
+    expect(run({ type: "enum", choices: [" red ", "", "green, blue"] }).schema).toEqual({
       type: "string",
-      enum: ["red", "green"],
+      enum: ["red", "green, blue"],
     });
-    expect(run({ type: "enum", choices: "a, a" }).issues).toEqual({
-      "root.choices": "Choices must be unique",
+    expect(run({ type: "enum", choices: ["red", " red "] }).issues).toEqual({
+      "root.choices.1": "Choice 'red' already exists",
+    });
+    expect(run({ type: "enum", choices: [""] }).issues).toEqual({
+      "root.choices": "Add at least one choice",
     });
   });
 });
@@ -117,7 +120,7 @@ describe("containers", () => {
 
   it("builds an object with a nested array of objects", () => {
     const tag = {
-      ...object(property("label", { type: "enum", choices: "a, b" })),
+      ...object(property("label", { type: "enum", choices: ["a", "b"] })),
       extraProperties: true,
     };
     const node = object(
@@ -161,7 +164,7 @@ describe("containers", () => {
       type: "computed",
       fn: "join",
       from: ["first", "last"],
-      options: '{"sep": ", "}',
+      options: { sep: ", " },
       result: newNode("string"),
     };
     const node = object(
@@ -184,7 +187,7 @@ describe("containers", () => {
       type: "computed",
       fn: "upper",
       from: ["name"],
-      options: "{}",
+      options: { sep: "-" },
       result: newNode("string"),
     };
     const schema = run(object(property("name", newNode("string")), property("loud", loud))).schema;
@@ -200,14 +203,14 @@ describe("containers", () => {
       type: "computed",
       fn: "upper",
       from: [],
-      options: "",
+      options: {},
       result: newNode("string"),
     };
     const later: Node = {
       type: "computed",
       fn: "upper",
       from: ["b"],
-      options: "",
+      options: {},
       result: newNode("string"),
     };
 

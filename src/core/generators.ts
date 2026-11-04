@@ -6,6 +6,7 @@
  * again, becomes an issue keyed by its path and is left out of the schema.
  */
 
+import { KEYWORD } from "./computers.ts";
 import meta from "./meta.json";
 import type { Schema } from "./models.ts";
 import {
@@ -14,13 +15,12 @@ import {
   checkBounds,
   NUMBER_CONSTRAINTS,
   STRING_CONSTRAINTS,
-  toChoices,
-  toOptions,
+  toOption,
 } from "./validators.ts";
 
 export const SCHEMA_DIALECT = meta.dialect;
 
-export const KEYWORD = "x-compute";
+export { KEYWORD };
 
 export const STRING_FORMATS = ["none", "email", "uuid"] as const;
 
@@ -37,7 +37,7 @@ export type Node =
     }
   | { type: "integer" | "number"; validators: boolean; constraints: Answers }
   | { type: "boolean" | "date" | "datetime" }
-  | { type: "enum"; choices: string }
+  | { type: "enum"; choices: string[] }
   | { type: "array"; items: Node; validators: boolean; constraints: Answers; uniqueItems: boolean }
   | ObjectNode
   | ComputedNode;
@@ -49,7 +49,8 @@ export type ComputedNode = {
   type: "computed";
   fn: string;
   from: string[];
-  options: string;
+  /** The typed option values by name, an empty one is left out. */
+  options: Record<string, string>;
   result: Node;
 };
 
@@ -81,7 +82,7 @@ const FACTORIES: Record<TypeName, () => Node> = {
   boolean: () => ({ type: "boolean" }),
   date: () => ({ type: "date" }),
   datetime: () => ({ type: "datetime" }),
-  enum: () => ({ type: "enum", choices: "" }),
+  enum: () => ({ type: "enum", choices: [""] }),
   array: () => ({
     type: "array",
     items: newNode("string"),
@@ -94,7 +95,7 @@ const FACTORIES: Record<TypeName, () => Node> = {
     type: "computed",
     fn: computerGroups()[0]?.[1][0] ?? "", // the first one listed, like the prompt
     from: [],
-    options: "",
+    options: {},
     result: newNode("string"),
   }),
 };
@@ -149,10 +150,7 @@ export function generate(node: Node, path: string, issues: Issues): Schema {
       return { type: "string", format: "date-time" };
 
     case "enum":
-      return {
-        type: "string",
-        ...parse(() => ({ enum: toChoices(node.choices) }), `${path}.choices`, issues),
-      };
+      return generateEnum(node.choices, path, issues);
 
     case "array":
       return generateArray(node, path, issues);
@@ -168,6 +166,29 @@ export function generate(node: Node, path: string, issues: Issues): Schema {
 // -----------------------
 // utils
 // -----------------------
+
+/** A string limited to `choices`, an empty choice is skipped, a repeated one rejected. */
+function generateEnum(choices: string[], path: string, issues: Issues): Schema {
+  const unique: string[] = [];
+
+  for (const [index, text] of choices.entries()) {
+    const choice = text.trim();
+
+    if (unique.includes(choice)) {
+      issues[`${path}.choices.${index}`] = `Choice '${choice}' already exists`;
+    } else if (choice) {
+      unique.push(choice);
+    }
+  }
+
+  if (unique.length === 0) {
+    issues[`${path}.choices`] = "Add at least one choice";
+
+    return { type: "string" };
+  }
+
+  return { type: "string", enum: unique };
+}
 
 /** Run `fn`, recording its error under `path` and returning `{}` instead. */
 function parse(fn: () => Schema, path: string, issues: Issues): Schema {
@@ -380,11 +401,21 @@ function generateComputed(
     spec.from = node.from;
   }
 
-  if (optionsExample(node.fn, node.from.length) !== null && node.options.trim()) {
-    Object.assign(
-      spec,
-      parse(() => ({ options: toOptions(node.options) }), `${path}.options`, issues),
-    );
+  const options: Schema = {};
+
+  for (const [name, example] of Object.entries(optionsExample(node.fn, node.from.length) ?? {})) {
+    const text = node.options[name] ?? "";
+
+    if (text !== "") {
+      Object.assign(
+        options,
+        parse(() => ({ [name]: toOption(text, example) }), `${path}.options.${name}`, issues),
+      );
+    }
+  }
+
+  if (Object.keys(options).length > 0) {
+    spec.options = options;
   }
 
   return { ...generate(node.result, `${path}.result`, issues), [KEYWORD]: spec };

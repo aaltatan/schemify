@@ -4,6 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Schemify</title>
+    <meta name="description" content="Build JSON Schemas in the browser, the web version of schemify generate." />
+    <meta name="author" content="Abdullah Altatan" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <script>
+      try {
+        const theme = localStorage.getItem("theme");
+
+        if (theme === "light" || theme === "dark") document.documentElement.dataset.theme = theme;
+      } catch {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

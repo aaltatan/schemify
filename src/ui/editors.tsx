@@ -25,59 +25,24 @@ import {
   NUMBER_CONSTRAINTS,
   STRING_CONSTRAINTS,
 } from "../core/validators.ts";
+import {
+  ADD_BUTTON,
+  Check,
+  ErrorText,
+  Field,
+  ICON_BUTTON,
+  Icon,
+  INPUT,
+  Select,
+} from "./controls.tsx";
 
 type EditorProps<N> = { node: N; path: string; issues: Issues; onChange: (node: N) => void };
 
-const INPUT =
-  "w-full rounded-md border border-neutral-300 bg-white px-2.5 py-1.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 aria-invalid:border-red-500 dark:border-neutral-700 dark:bg-neutral-900";
-
-const BUTTON =
-  "rounded-md px-2 py-1 text-sm text-neutral-600 hover:bg-neutral-200 disabled:opacity-30 dark:text-neutral-400 dark:hover:bg-neutral-800";
+const LEGEND = "mb-1.5 text-[0.8125rem] text-ink-muted";
 
 // -----------------------
 // form pieces
 // -----------------------
-
-function Field({
-  label,
-  error,
-  children,
-}: {
-  label: string;
-  error?: string | undefined;
-  children: ReactNode;
-}) {
-  return (
-    // biome-ignore lint/a11y/noLabelWithoutControl: the control is passed in as `children`
-    <label className="flex flex-col gap-1 text-sm">
-      <span className="text-neutral-600 dark:text-neutral-400">{label}</span>
-      {children}
-      {error && <span className="text-xs text-red-600 dark:text-red-400">{error}</span>}
-    </label>
-  );
-}
-
-function Check({
-  label,
-  checked,
-  onChange,
-}: {
-  label: string;
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-}) {
-  return (
-    <label className="flex items-center gap-2 text-sm">
-      <input
-        type="checkbox"
-        className="size-4 accent-indigo-600"
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
-      />
-      {label}
-    </label>
-  );
-}
 
 function TypeSelect({
   value,
@@ -96,16 +61,13 @@ function TypeSelect({
 
   return (
     <Field label={label} error={error}>
-      <select
-        className={INPUT}
+      <Select
         value={value}
-        aria-invalid={Boolean(error)}
-        onChange={(e) => onChange(e.target.value as TypeName)}
-      >
-        {types.map((type) => (
-          <option key={type}>{type}</option>
-        ))}
-      </select>
+        groups={[["", types]]}
+        invalid={Boolean(error)}
+        mono
+        onChange={(type) => onChange(type as TypeName)}
+      />
     </Field>
   );
 }
@@ -125,11 +87,11 @@ function Constraints({
   onChange: (answers: Record<string, string>) => void;
 }) {
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
+    <div className="grid gap-x-3 gap-y-1.5 sm:grid-cols-2">
       {constraints.map(({ keyword, question }) => (
         <Field key={keyword} label={`${question} (optional)`} error={issues[`${path}.${keyword}`]}>
           <input
-            className={INPUT}
+            className={`${INPUT} font-mono text-[0.8125rem]`}
             value={answers[keyword] ?? ""}
             aria-invalid={Boolean(issues[`${path}.${keyword}`])}
             onChange={(e) => onChange({ ...answers, [keyword]: e.target.value })}
@@ -163,17 +125,16 @@ export function NodeEditor({
           checked={node.validators}
           onChange={(validators) => onChange({ ...node, validators })}
         >
-          <Field label="Format">
-            <select
-              className={INPUT}
-              value={node.format}
-              onChange={(e) => onChange({ ...node, format: e.target.value as typeof node.format })}
-            >
-              {STRING_FORMATS.map((format) => (
-                <option key={format}>{format}</option>
-              ))}
-            </select>
-          </Field>
+          <div className="sm:max-w-[calc(50%-0.375rem)]">
+            <Field label="Format">
+              <Select
+                value={node.format}
+                groups={[["", STRING_FORMATS]]}
+                mono
+                onChange={(format) => onChange({ ...node, format: format as typeof node.format })}
+              />
+            </Field>
+          </div>
           {node.format === "none" && (
             <>
               <Check
@@ -213,25 +174,25 @@ export function NodeEditor({
 
     case "enum":
       return (
-        <Field label="Choices, comma separated" error={issues[`${path}.choices`]}>
-          <input
-            className={INPUT}
-            value={node.choices}
-            aria-invalid={Boolean(issues[`${path}.choices`])}
-            onChange={(e) => onChange({ ...node, choices: e.target.value })}
-          />
-        </Field>
+        <ChoicesEditor
+          choices={node.choices}
+          path={path}
+          issues={issues}
+          onChange={(choices) => onChange({ ...node, choices })}
+        />
       );
 
     case "array":
       return (
-        <div className="flex flex-col gap-3">
-          <TypeSelect
-            label="Items type"
-            value={node.items.type}
-            allowComputed={false}
-            onChange={(type) => onChange({ ...node, items: newNode(type) })}
-          />
+        <div className="flex flex-col gap-4">
+          <div className="sm:max-w-[calc(50%-0.375rem)]">
+            <TypeSelect
+              label="Items type"
+              value={node.items.type}
+              allowComputed={false}
+              onChange={(type) => onChange({ ...node, items: newNode(type) })}
+            />
+          </div>
           <Nested>
             <NodeEditor
               node={node.items}
@@ -296,8 +257,70 @@ function Validators({
   );
 }
 
+function ChoicesEditor({
+  choices,
+  path,
+  issues,
+  onChange,
+}: {
+  choices: string[];
+  path: string;
+  issues: Issues;
+  onChange: (choices: string[]) => void;
+}) {
+  return (
+    <fieldset className="flex flex-col gap-2 text-sm">
+      <legend className={LEGEND}>Choices</legend>
+      {choices.map((choice, index) => {
+        const error = issues[`${path}.choices.${index}`];
+
+        return (
+          // biome-ignore lint/suspicious/noArrayIndexKey: choices are plain strings, edited in place
+          <div key={index} className="flex flex-col gap-1">
+            <div className="flex items-center gap-1">
+              <span className="w-6 shrink-0 text-right font-mono text-xs text-ink-muted tabular-nums">
+                {index + 1}
+              </span>
+              <input
+                className={`${INPUT} font-mono text-[0.8125rem]`}
+                value={choice}
+                aria-label={`Choice ${index + 1}`}
+                aria-invalid={Boolean(error)}
+                onChange={(e) => onChange(choices.with(index, e.target.value))}
+              />
+              <button
+                type="button"
+                className={`${ICON_BUTTON} hover:bg-danger-soft hover:text-danger`}
+                disabled={choices.length === 1}
+                onClick={() => onChange(choices.filter((_, i) => i !== index))}
+                aria-label={`Remove choice ${index + 1}`}
+              >
+                <Icon name="x" />
+              </button>
+            </div>
+            {error && (
+              <span className="pl-7">
+                <ErrorText>{error}</ErrorText>
+              </span>
+            )}
+          </div>
+        );
+      })}
+      {issues[`${path}.choices`] && <ErrorText>{issues[`${path}.choices`]}</ErrorText>}
+      <button
+        type="button"
+        className={`${ADD_BUTTON} ml-7`}
+        onClick={() => onChange([...choices, ""])}
+      >
+        <Icon name="plus" />
+        Add choice
+      </button>
+    </fieldset>
+  );
+}
+
 function Nested({ children }: { children: ReactNode }) {
-  return <div className="border-l-2 border-indigo-200 pl-4 dark:border-indigo-900">{children}</div>;
+  return <div className="border-l border-rule-strong pl-4">{children}</div>;
 }
 
 export function ObjectEditor({ node, path, issues, onChange }: EditorProps<ObjectNode>) {
@@ -337,15 +360,16 @@ export function ObjectEditor({ node, path, issues, onChange }: EditorProps<Objec
         />
       ))}
       {issues[`${path}.properties`] && (
-        <p className="text-sm text-red-600 dark:text-red-400">{issues[`${path}.properties`]}</p>
+        <p className="text-sm text-danger">{issues[`${path}.properties`]}</p>
       )}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <button
           type="button"
-          className="rounded-md border border-dashed border-neutral-400 px-3 py-1.5 text-sm hover:border-indigo-500 hover:text-indigo-600 dark:border-neutral-600"
+          className={ADD_BUTTON}
           onClick={() => onChange({ ...node, properties: [...node.properties, newProperty()] })}
         >
-          + Add property
+          <Icon name="plus" />
+          Add property
         </button>
         <Check
           label="Allow extra properties"
@@ -382,11 +406,11 @@ function PropertyCard({
   const hasBody = !["boolean", "date", "datetime"].includes(property.node.type);
 
   return (
-    <section className="flex flex-col gap-3 rounded-lg border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
-      <div className="grid gap-3 sm:grid-cols-[1fr_10rem_auto] sm:items-start">
+    <section className="flex flex-col gap-4 rounded-[6px] border border-rule bg-sheet p-4 shadow-[0_1px_2px_oklch(0.2_0.05_258/0.06)]">
+      <div className="grid gap-x-3 gap-y-1.5 sm:grid-cols-[1fr_11rem_auto]">
         <Field label="Property name" error={issues[`${path}.name`]}>
           <input
-            className={`${INPUT} font-mono`}
+            className={`${INPUT} font-mono text-[0.8125rem] font-medium`}
             value={property.name}
             aria-invalid={Boolean(issues[`${path}.name`])}
             onChange={(e) => onChange({ ...property, name: e.target.value })}
@@ -399,36 +423,36 @@ function PropertyCard({
           error={issues[`${path}.type`]}
           onChange={(type) => onChange({ ...property, node: newNode(type) })}
         />
-        <div className="flex gap-1 sm:pt-6">
+        <div className="flex gap-0.5 self-start sm:col-start-3 sm:row-start-2">
           <button
             type="button"
-            className={BUTTON}
+            className={ICON_BUTTON}
             disabled={index === 0}
             onClick={() => onMove(index - 1)}
             aria-label={`Move '${name}' up`}
           >
-            ↑
+            <Icon name="up" />
           </button>
           <button
             type="button"
-            className={BUTTON}
+            className={ICON_BUTTON}
             disabled={index === count - 1}
             onClick={() => onMove(index + 1)}
             aria-label={`Move '${name}' down`}
           >
-            ↓
+            <Icon name="down" />
           </button>
           <button
             type="button"
-            className={`${BUTTON} hover:text-red-600`}
+            className={`${ICON_BUTTON} hover:bg-danger-soft hover:text-danger`}
             onClick={onRemove}
             aria-label={`Remove '${name}'`}
           >
-            ✕
+            <Icon name="x" />
           </button>
         </div>
       </div>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-x-3 gap-y-1.5 sm:grid-cols-2">
         <Field label={`Label shown instead of '${name}' when filling (optional)`}>
           <input
             className={INPUT}
@@ -450,7 +474,7 @@ function PropertyCard({
         onChange={(required) => onChange({ ...property, required })}
       />
       {hasBody && (
-        <Nested>
+        <div className="-mx-4 -mb-4 border-t border-rule bg-sunken/60 px-4 pt-4 pb-4">
           <NodeEditor
             node={property.node}
             path={path}
@@ -458,7 +482,7 @@ function PropertyCard({
             earlier={earlier}
             onChange={(node) => onChange({ ...property, node })}
           />
-        </Nested>
+        </div>
       )}
     </section>
   );
@@ -482,35 +506,29 @@ function ComputedEditor({
     });
 
   return (
-    <div className="flex flex-col gap-3">
-      <Field label="Compute with" error={issues[`${path}.fn`]}>
-        <select
-          className={INPUT}
-          value={node.fn}
-          onChange={(e) => onChange({ ...node, fn: e.target.value })}
-        >
-          {computerGroups().map(([group, names]) => (
-            <optgroup key={group} label={group}>
-              {names.map((name) => (
-                <option key={name}>{name}</option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
-      </Field>
+    <div className="flex flex-col gap-4">
+      <div className="sm:max-w-[calc(50%-0.375rem)]">
+        <Field label="Compute with" error={issues[`${path}.fn`]}>
+          <Select
+            value={node.fn}
+            groups={computerGroups()}
+            invalid={Boolean(issues[`${path}.fn`])}
+            mono
+            onChange={(fn) => onChange({ ...node, fn })}
+          />
+        </Field>
+      </div>
       {info && (
-        <div className="rounded-md bg-neutral-100 px-3 py-2 text-sm dark:bg-neutral-900">
-          <code className="font-semibold break-words">{info.signature}</code>
-          {info.summary && (
-            <p className="mt-1 text-neutral-600 italic dark:text-neutral-400">{info.summary}</p>
-          )}
+        <div className="rounded-[5px] border border-rule bg-sheet px-3 py-2.5 text-sm">
+          <code className="font-mono text-[0.8125rem] font-medium break-words text-accent">
+            {info.signature}
+          </code>
+          {info.summary && <p className="mt-1 text-ink-muted">{info.summary}</p>}
         </div>
       )}
       <fieldset className="flex flex-col gap-1 text-sm">
-        <legend className="mb-1 text-neutral-600 dark:text-neutral-400">
-          Computed from (in order)
-        </legend>
-        <div className="flex flex-wrap gap-2">
+        <legend className={LEGEND}>Computed from (in order)</legend>
+        <div className="flex flex-wrap gap-1.5">
           {earlier.map((source) => {
             const order = node.from.indexOf(source);
 
@@ -519,40 +537,50 @@ function ComputedEditor({
                 key={source}
                 type="button"
                 aria-pressed={order >= 0}
-                className="rounded-full border border-neutral-300 px-3 py-1 font-mono text-xs aria-pressed:border-indigo-500 aria-pressed:bg-indigo-50 aria-pressed:text-indigo-700 dark:border-neutral-700 dark:aria-pressed:bg-indigo-950 dark:aria-pressed:text-indigo-300"
+                className="inline-flex h-7 items-center gap-1.5 rounded-[5px] border border-rule-strong bg-sheet px-2.5 font-mono text-xs text-ink-muted transition-colors duration-150 hover:border-ink-muted hover:text-ink aria-pressed:border-accent aria-pressed:bg-accent-soft aria-pressed:text-ink"
                 onClick={() => toggle(source)}
               >
-                {order >= 0 && <span className="mr-1 font-sans font-semibold">{order + 1}</span>}
+                {order >= 0 && (
+                  <span className="grid size-4 place-items-center rounded-[3px] bg-accent font-sans text-[0.6875rem] font-semibold text-on-accent tabular-nums">
+                    {order + 1}
+                  </span>
+                )}
                 {source}
               </button>
             );
           })}
         </div>
-        {issues[`${path}.from`] && (
-          <span className="text-xs text-red-600 dark:text-red-400">{issues[`${path}.from`]}</span>
-        )}
+        {issues[`${path}.from`] && <ErrorText>{issues[`${path}.from`]}</ErrorText>}
       </fieldset>
-      {example !== null && (
-        <Field
-          label={`Options as JSON (optional), like ${JSON.stringify(example)}`}
-          error={issues[`${path}.options`]}
-        >
-          <textarea
-            className={`${INPUT} font-mono`}
-            rows={2}
-            value={node.options}
-            placeholder={JSON.stringify(example)}
-            aria-invalid={Boolean(issues[`${path}.options`])}
-            onChange={(e) => onChange({ ...node, options: e.target.value })}
-          />
-        </Field>
+      {Object.keys(example ?? {}).length > 0 && (
+        <div className="grid gap-x-3 gap-y-1.5 sm:grid-cols-2">
+          {Object.entries(example ?? {}).map(([name, value]) => (
+            <Field
+              key={name}
+              label={`${name} (optional)`}
+              error={issues[`${path}.options.${name}`]}
+            >
+              <input
+                className={`${INPUT} font-mono text-[0.8125rem]`}
+                value={node.options[name] ?? ""}
+                placeholder={typeof value === "string" ? value : JSON.stringify(value)}
+                aria-invalid={Boolean(issues[`${path}.options.${name}`])}
+                onChange={(e) =>
+                  onChange({ ...node, options: { ...node.options, [name]: e.target.value } })
+                }
+              />
+            </Field>
+          ))}
+        </div>
       )}
-      <TypeSelect
-        label="Result type"
-        value={node.result.type}
-        allowComputed={false}
-        onChange={(type) => onChange({ ...node, result: newNode(type) })}
-      />
+      <div className="sm:max-w-[calc(50%-0.375rem)]">
+        <TypeSelect
+          label="Result type"
+          value={node.result.type}
+          allowComputed={false}
+          onChange={(type) => onChange({ ...node, result: newNode(type) })}
+        />
+      </div>
       <Nested>
         <NodeEditor
           node={node.result}

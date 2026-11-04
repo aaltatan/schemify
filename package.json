@@ -16,6 +16,9 @@
     "check": "pnpm typecheck && pnpm lint && pnpm test"
   },
   "dependencies": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "n2words": "6.3.0",
     "react": "19.3.1",
     "react-dom": "19.3.1"
   },

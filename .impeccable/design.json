@@ -1,0 +1,783 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-04T14:07:19.262Z",
+  "title": "Design System: schemify editor",
+  "extensions": {
+    "colorMeta": {
+      "accent": {
+        "role": "primary",
+        "displayName": "Drafting Ink Blue",
+        "canonical": "oklch(0.47 0.16 260)",
+        "tonalRamp": [
+          "oklch(0.15 0.070 260)",
+          "oklch(0.25 0.093 260)",
+          "oklch(0.35 0.115 260)",
+          "oklch(0.47 0.142 260)",
+          "oklch(0.6 0.149 260)",
+          "oklch(0.72 0.122 260)",
+          "oklch(0.84 0.095 260)",
+          "oklch(0.95 0.070 260)"
+        ]
+      },
+      "accent-hover": {
+        "role": "primary",
+        "displayName": "Pressed Ink",
+        "canonical": "oklch(0.41 0.16 260)",
+        "tonalRamp": [
+          "oklch(0.15 0.070 260)",
+          "oklch(0.25 0.093 260)",
+          "oklch(0.35 0.115 260)",
+          "oklch(0.47 0.142 260)",
+          "oklch(0.6 0.149 260)",
+          "oklch(0.72 0.122 260)",
+          "oklch(0.84 0.095 260)",
+          "oklch(0.95 0.070 260)"
+        ]
+      },
+      "accent-soft": {
+        "role": "primary",
+        "displayName": "Ink Wash",
+        "canonical": "oklch(0.93 0.035 258)",
+        "tonalRamp": [
+          "oklch(0.15 0.015 258)",
+          "oklch(0.25 0.020 258)",
+          "oklch(0.35 0.025 258)",
+          "oklch(0.47 0.031 258)",
+          "oklch(0.6 0.033 258)",
+          "oklch(0.72 0.027 258)",
+          "oklch(0.84 0.021 258)",
+          "oklch(0.95 0.015 258)"
+        ]
+      },
+      "on-accent": {
+        "role": "primary",
+        "displayName": "Paper on Ink",
+        "canonical": "oklch(0.99 0.005 245)",
+        "tonalRamp": [
+          "oklch(0.15 0.004 245)",
+          "oklch(0.25 0.004 245)",
+          "oklch(0.35 0.004 245)",
+          "oklch(0.47 0.004 245)",
+          "oklch(0.6 0.005 245)",
+          "oklch(0.72 0.004 245)",
+          "oklch(0.84 0.004 245)",
+          "oklch(0.95 0.004 245)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Drafting Paper",
+        "canonical": "oklch(0.962 0.008 245)",
+        "tonalRamp": [
+          "oklch(0.15 0.004 245)",
+          "oklch(0.25 0.005 245)",
+          "oklch(0.35 0.006 245)",
+          "oklch(0.47 0.007 245)",
+          "oklch(0.6 0.007 245)",
+          "oklch(0.72 0.006 245)",
+          "oklch(0.84 0.005 245)",
+          "oklch(0.95 0.004 245)"
+        ]
+      },
+      "grid": {
+        "role": "neutral",
+        "displayName": "Graph Line",
+        "canonical": "oklch(0.925 0.012 245)",
+        "tonalRamp": [
+          "oklch(0.15 0.005 245)",
+          "oklch(0.25 0.007 245)",
+          "oklch(0.35 0.009 245)",
+          "oklch(0.47 0.011 245)",
+          "oklch(0.6 0.011 245)",
+          "oklch(0.72 0.009 245)",
+          "oklch(0.84 0.007 245)",
+          "oklch(0.95 0.005 245)"
+        ]
+      },
+      "sheet": {
+        "role": "neutral",
+        "displayName": "Clean Sheet",
+        "canonical": "oklch(0.99 0.003 245)",
+        "tonalRamp": [
+          "oklch(0.15 0.004 245)",
+          "oklch(0.25 0.004 245)",
+          "oklch(0.35 0.004 245)",
+          "oklch(0.47 0.004 245)",
+          "oklch(0.6 0.004 245)",
+          "oklch(0.72 0.004 245)",
+          "oklch(0.84 0.004 245)",
+          "oklch(0.95 0.004 245)"
+        ]
+      },
+      "sunken": {
+        "role": "neutral",
+        "displayName": "Recess",
+        "canonical": "oklch(0.945 0.01 245)",
+        "tonalRamp": [
+          "oklch(0.15 0.004 245)",
+          "oklch(0.25 0.006 245)",
+          "oklch(0.35 0.007 245)",
+          "oklch(0.47 0.009 245)",
+          "oklch(0.6 0.009 245)",
+          "oklch(0.72 0.008 245)",
+          "oklch(0.84 0.006 245)",
+          "oklch(0.95 0.004 245)"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "oklch(0.87 0.012 245)",
+        "tonalRamp": [
+          "oklch(0.15 0.005 245)",
+          "oklch(0.25 0.007 245)",
+          "oklch(0.35 0.009 245)",
+          "oklch(0.47 0.011 245)",
+          "oklch(0.6 0.011 245)",
+          "oklch(0.72 0.009 245)",
+          "oklch(0.84 0.007 245)",
+          "oklch(0.95 0.005 245)"
+        ]
+      },
+      "rule-strong": {
+        "role": "neutral",
+        "displayName": "Strong Rule",
+        "canonical": "oklch(0.74 0.018 250)",
+        "tonalRamp": [
+          "oklch(0.15 0.008 250)",
+          "oklch(0.25 0.010 250)",
+          "oklch(0.35 0.013 250)",
+          "oklch(0.47 0.016 250)",
+          "oklch(0.6 0.017 250)",
+          "oklch(0.72 0.014 250)",
+          "oklch(0.84 0.011 250)",
+          "oklch(0.95 0.008 250)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Graphite Ink",
+        "canonical": "oklch(0.26 0.035 258)",
+        "tonalRamp": [
+          "oklch(0.15 0.015 258)",
+          "oklch(0.25 0.020 258)",
+          "oklch(0.35 0.025 258)",
+          "oklch(0.47 0.031 258)",
+          "oklch(0.6 0.033 258)",
+          "oklch(0.72 0.027 258)",
+          "oklch(0.84 0.021 258)",
+          "oklch(0.95 0.015 258)"
+        ]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Graphite Muted",
+        "canonical": "oklch(0.47 0.03 255)",
+        "tonalRamp": [
+          "oklch(0.15 0.013 255)",
+          "oklch(0.25 0.017 255)",
+          "oklch(0.35 0.022 255)",
+          "oklch(0.47 0.027 255)",
+          "oklch(0.6 0.028 255)",
+          "oklch(0.72 0.023 255)",
+          "oklch(0.84 0.018 255)",
+          "oklch(0.95 0.013 255)"
+        ]
+      },
+      "danger": {
+        "role": "error",
+        "displayName": "Correction Red",
+        "canonical": "oklch(0.52 0.19 27)",
+        "tonalRamp": [
+          "oklch(0.15 0.084 27)",
+          "oklch(0.25 0.110 27)",
+          "oklch(0.35 0.137 27)",
+          "oklch(0.47 0.169 27)",
+          "oklch(0.6 0.177 27)",
+          "oklch(0.72 0.145 27)",
+          "oklch(0.84 0.113 27)",
+          "oklch(0.95 0.084 27)"
+        ]
+      },
+      "danger-soft": {
+        "role": "error",
+        "displayName": "Correction Wash",
+        "canonical": "oklch(0.95 0.03 27)",
+        "tonalRamp": [
+          "oklch(0.15 0.013 27)",
+          "oklch(0.25 0.017 27)",
+          "oklch(0.35 0.022 27)",
+          "oklch(0.47 0.027 27)",
+          "oklch(0.6 0.028 27)",
+          "oklch(0.72 0.023 27)",
+          "oklch(0.84 0.018 27)",
+          "oklch(0.95 0.013 27)"
+        ]
+      },
+      "ok": {
+        "role": "success",
+        "displayName": "Check Green",
+        "canonical": "oklch(0.5 0.12 160)",
+        "tonalRamp": [
+          "oklch(0.15 0.053 160)",
+          "oklch(0.25 0.070 160)",
+          "oklch(0.35 0.086 160)",
+          "oklch(0.47 0.107 160)",
+          "oklch(0.6 0.112 160)",
+          "oklch(0.72 0.091 160)",
+          "oklch(0.84 0.071 160)",
+          "oklch(0.95 0.053 160)"
+        ]
+      },
+      "print": {
+        "role": "neutral",
+        "displayName": "Blueprint Navy",
+        "canonical": "oklch(0.255 0.06 258)",
+        "tonalRamp": [
+          "oklch(0.15 0.026 258)",
+          "oklch(0.25 0.035 258)",
+          "oklch(0.35 0.043 258)",
+          "oklch(0.47 0.053 258)",
+          "oklch(0.6 0.056 258)",
+          "oklch(0.72 0.046 258)",
+          "oklch(0.84 0.036 258)",
+          "oklch(0.95 0.026 258)"
+        ]
+      },
+      "print-rule": {
+        "role": "neutral",
+        "displayName": "Blueprint Rule",
+        "canonical": "oklch(0.34 0.06 258)",
+        "tonalRamp": [
+          "oklch(0.15 0.026 258)",
+          "oklch(0.25 0.035 258)",
+          "oklch(0.35 0.043 258)",
+          "oklch(0.47 0.053 258)",
+          "oklch(0.6 0.056 258)",
+          "oklch(0.72 0.046 258)",
+          "oklch(0.84 0.036 258)",
+          "oklch(0.95 0.026 258)"
+        ]
+      },
+      "print-ink": {
+        "role": "neutral",
+        "displayName": "Blueprint Ink",
+        "canonical": "oklch(0.93 0.02 240)",
+        "tonalRamp": [
+          "oklch(0.15 0.009 240)",
+          "oklch(0.25 0.012 240)",
+          "oklch(0.35 0.014 240)",
+          "oklch(0.47 0.018 240)",
+          "oklch(0.6 0.019 240)",
+          "oklch(0.72 0.015 240)",
+          "oklch(0.84 0.012 240)",
+          "oklch(0.95 0.009 240)"
+        ]
+      },
+      "accent-dark": {
+        "role": "primary",
+        "displayName": "Drafting Ink Blue (dark)",
+        "canonical": "oklch(0.78 0.11 245)",
+        "tonalRamp": [
+          "oklch(0.15 0.048 245)",
+          "oklch(0.25 0.064 245)",
+          "oklch(0.35 0.079 245)",
+          "oklch(0.47 0.098 245)",
+          "oklch(0.6 0.102 245)",
+          "oklch(0.72 0.084 245)",
+          "oklch(0.84 0.065 245)",
+          "oklch(0.95 0.048 245)"
+        ]
+      },
+      "accent-hover-dark": {
+        "role": "primary",
+        "displayName": "Pressed Ink (dark)",
+        "canonical": "oklch(0.84 0.09 245)",
+        "tonalRamp": [
+          "oklch(0.15 0.040 245)",
+          "oklch(0.25 0.052 245)",
+          "oklch(0.35 0.065 245)",
+          "oklch(0.47 0.080 245)",
+          "oklch(0.6 0.084 245)",
+          "oklch(0.72 0.069 245)",
+          "oklch(0.84 0.053 245)",
+          "oklch(0.95 0.040 245)"
+        ]
+      },
+      "accent-soft-dark": {
+        "role": "primary",
+        "displayName": "Ink Wash (dark)",
+        "canonical": "oklch(0.33 0.07 255)",
+        "tonalRamp": [
+          "oklch(0.15 0.031 255)",
+          "oklch(0.25 0.041 255)",
+          "oklch(0.35 0.050 255)",
+          "oklch(0.47 0.062 255)",
+          "oklch(0.6 0.065 255)",
+          "oklch(0.72 0.053 255)",
+          "oklch(0.84 0.042 255)",
+          "oklch(0.95 0.031 255)"
+        ]
+      },
+      "on-accent-dark": {
+        "role": "primary",
+        "displayName": "Paper on Ink (dark)",
+        "canonical": "oklch(0.2 0.04 258)",
+        "tonalRamp": [
+          "oklch(0.15 0.018 258)",
+          "oklch(0.25 0.023 258)",
+          "oklch(0.35 0.029 258)",
+          "oklch(0.47 0.036 258)",
+          "oklch(0.6 0.037 258)",
+          "oklch(0.72 0.030 258)",
+          "oklch(0.84 0.024 258)",
+          "oklch(0.95 0.018 258)"
+        ]
+      },
+      "paper-dark": {
+        "role": "neutral",
+        "displayName": "Drafting Paper (dark)",
+        "canonical": "oklch(0.205 0.035 258)",
+        "tonalRamp": [
+          "oklch(0.15 0.015 258)",
+          "oklch(0.25 0.020 258)",
+          "oklch(0.35 0.025 258)",
+          "oklch(0.47 0.031 258)",
+          "oklch(0.6 0.033 258)",
+          "oklch(0.72 0.027 258)",
+          "oklch(0.84 0.021 258)",
+          "oklch(0.95 0.015 258)"
+        ]
+      },
+      "grid-dark": {
+        "role": "neutral",
+        "displayName": "Graph Line (dark)",
+        "canonical": "oklch(0.235 0.04 258)",
+        "tonalRamp": [
+          "oklch(0.15 0.018 258)",
+          "oklch(0.25 0.023 258)",
+          "oklch(0.35 0.029 258)",
+          "oklch(0.47 0.036 258)",
+          "oklch(0.6 0.037 258)",
+          "oklch(0.72 0.030 258)",
+          "oklch(0.84 0.024 258)",
+          "oklch(0.95 0.018 258)"
+        ]
+      },
+      "sheet-dark": {
+        "role": "neutral",
+        "displayName": "Clean Sheet (dark)",
+        "canonical": "oklch(0.245 0.04 258)",
+        "tonalRamp": [
+          "oklch(0.15 0.018 258)",
+          "oklch(0.25 0.023 258)",
+          "oklch(0.35 0.029 258)",
+          "oklch(0.47 0.036 258)",
+          "oklch(0.6 0.037 258)",
+          "oklch(0.72 0.030 258)",
+          "oklch(0.84 0.024 258)",
+          "oklch(0.95 0.018 258)"
+        ]
+      },
+      "sunken-dark": {
+        "role": "neutral",
+        "displayName": "Recess (dark)",
+        "canonical": "oklch(0.215 0.038 258)",
+        "tonalRamp": [
+          "oklch(0.15 0.017 258)",
+          "oklch(0.25 0.022 258)",
+          "oklch(0.35 0.027 258)",
+          "oklch(0.47 0.034 258)",
+          "oklch(0.6 0.035 258)",
+          "oklch(0.72 0.029 258)",
+          "oklch(0.84 0.023 258)",
+          "oklch(0.95 0.017 258)"
+        ]
+      },
+      "rule-dark": {
+        "role": "neutral",
+        "displayName": "Hairline (dark)",
+        "canonical": "oklch(0.33 0.04 258)",
+        "tonalRamp": [
+          "oklch(0.15 0.018 258)",
+          "oklch(0.25 0.023 258)",
+          "oklch(0.35 0.029 258)",
+          "oklch(0.47 0.036 258)",
+          "oklch(0.6 0.037 258)",
+          "oklch(0.72 0.030 258)",
+          "oklch(0.84 0.024 258)",
+          "oklch(0.95 0.018 258)"
+        ]
+      },
+      "rule-strong-dark": {
+        "role": "neutral",
+        "displayName": "Strong Rule (dark)",
+        "canonical": "oklch(0.45 0.045 255)",
+        "tonalRamp": [
+          "oklch(0.15 0.020 255)",
+          "oklch(0.25 0.026 255)",
+          "oklch(0.35 0.032 255)",
+          "oklch(0.47 0.040 255)",
+          "oklch(0.6 0.042 255)",
+          "oklch(0.72 0.034 255)",
+          "oklch(0.84 0.027 255)",
+          "oklch(0.95 0.020 255)"
+        ]
+      },
+      "ink-dark": {
+        "role": "neutral",
+        "displayName": "Graphite Ink (dark)",
+        "canonical": "oklch(0.94 0.012 245)",
+        "tonalRamp": [
+          "oklch(0.15 0.005 245)",
+          "oklch(0.25 0.007 245)",
+          "oklch(0.35 0.009 245)",
+          "oklch(0.47 0.011 245)",
+          "oklch(0.6 0.011 245)",
+          "oklch(0.72 0.009 245)",
+          "oklch(0.84 0.007 245)",
+          "oklch(0.95 0.005 245)"
+        ]
+      },
+      "ink-muted-dark": {
+        "role": "neutral",
+        "displayName": "Graphite Muted (dark)",
+        "canonical": "oklch(0.74 0.03 248)",
+        "tonalRamp": [
+          "oklch(0.15 0.013 248)",
+          "oklch(0.25 0.017 248)",
+          "oklch(0.35 0.022 248)",
+          "oklch(0.47 0.027 248)",
+          "oklch(0.6 0.028 248)",
+          "oklch(0.72 0.023 248)",
+          "oklch(0.84 0.018 248)",
+          "oklch(0.95 0.013 248)"
+        ]
+      },
+      "danger-dark": {
+        "role": "error",
+        "displayName": "Correction Red (dark)",
+        "canonical": "oklch(0.74 0.15 25)",
+        "tonalRamp": [
+          "oklch(0.15 0.066 25)",
+          "oklch(0.25 0.087 25)",
+          "oklch(0.35 0.108 25)",
+          "oklch(0.47 0.133 25)",
+          "oklch(0.6 0.140 25)",
+          "oklch(0.72 0.114 25)",
+          "oklch(0.84 0.089 25)",
+          "oklch(0.95 0.066 25)"
+        ]
+      },
+      "danger-soft-dark": {
+        "role": "error",
+        "displayName": "Correction Wash (dark)",
+        "canonical": "oklch(0.3 0.06 25)",
+        "tonalRamp": [
+          "oklch(0.15 0.026 25)",
+          "oklch(0.25 0.035 25)",
+          "oklch(0.35 0.043 25)",
+          "oklch(0.47 0.053 25)",
+          "oklch(0.6 0.056 25)",
+          "oklch(0.72 0.046 25)",
+          "oklch(0.84 0.036 25)",
+          "oklch(0.95 0.026 25)"
+        ]
+      },
+      "ok-dark": {
+        "role": "success",
+        "displayName": "Check Green (dark)",
+        "canonical": "oklch(0.78 0.12 160)",
+        "tonalRamp": [
+          "oklch(0.15 0.053 160)",
+          "oklch(0.25 0.070 160)",
+          "oklch(0.35 0.086 160)",
+          "oklch(0.47 0.107 160)",
+          "oklch(0.6 0.112 160)",
+          "oklch(0.72 0.091 160)",
+          "oklch(0.84 0.071 160)",
+          "oklch(0.95 0.053 160)"
+        ]
+      },
+      "print-dark": {
+        "role": "neutral",
+        "displayName": "Blueprint Navy (dark)",
+        "canonical": "oklch(0.165 0.035 258)",
+        "tonalRamp": [
+          "oklch(0.15 0.015 258)",
+          "oklch(0.25 0.020 258)",
+          "oklch(0.35 0.025 258)",
+          "oklch(0.47 0.031 258)",
+          "oklch(0.6 0.033 258)",
+          "oklch(0.72 0.027 258)",
+          "oklch(0.84 0.021 258)",
+          "oklch(0.95 0.015 258)"
+        ]
+      },
+      "print-rule-dark": {
+        "role": "neutral",
+        "displayName": "Blueprint Rule (dark)",
+        "canonical": "oklch(0.28 0.04 258)",
+        "tonalRamp": [
+          "oklch(0.15 0.018 258)",
+          "oklch(0.25 0.023 258)",
+          "oklch(0.35 0.029 258)",
+          "oklch(0.47 0.036 258)",
+          "oklch(0.6 0.037 258)",
+          "oklch(0.72 0.030 258)",
+          "oklch(0.84 0.024 258)",
+          "oklch(0.95 0.018 258)"
+        ]
+      },
+      "print-ink-dark": {
+        "role": "neutral",
+        "displayName": "Blueprint Ink (dark)",
+        "canonical": "oklch(0.92 0.02 240)",
+        "tonalRamp": [
+          "oklch(0.15 0.009 240)",
+          "oklch(0.25 0.012 240)",
+          "oklch(0.35 0.014 240)",
+          "oklch(0.47 0.018 240)",
+          "oklch(0.6 0.019 240)",
+          "oklch(0.72 0.015 240)",
+          "oklch(0.84 0.012 240)",
+          "oklch(0.95 0.009 240)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "title": {
+        "displayName": "Title",
+        "purpose": "The schema title input only; the largest text in the app."
+      },
+      "wordmark": {
+        "displayName": "Wordmark",
+        "purpose": "\"schemify\" in the header lockup, after the mark."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Input values, checkbox labels, options, computed summaries."
+      },
+      "button": {
+        "displayName": "Button",
+        "purpose": "Button labels."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Field labels and legends, sentence-case questions in muted ink."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Error text, panel status, listbox group headings."
+      },
+      "code": {
+        "displayName": "Code",
+        "purpose": "Property names, type selects, values, options, filename."
+      },
+      "code-block": {
+        "displayName": "Code Block",
+        "purpose": "The JSON in the blueprint panel."
+      }
+    },
+    "shadows": [
+      {
+        "name": "sheet",
+        "value": "0 1px 2px oklch(0.2 0.05 258 / 0.06)",
+        "purpose": "Property cards resting on the paper."
+      },
+      {
+        "name": "popover",
+        "value": "0 8px 24px -6px oklch(0.2 0.05 258 / 0.25), 0 2px 6px -2px oklch(0.2 0.05 258 / 0.12)",
+        "purpose": "The open select listbox."
+      },
+      {
+        "name": "print",
+        "value": "0 10px 30px -12px oklch(0.2 0.06 258 / 0.45)",
+        "purpose": "The blueprint JSON panel."
+      },
+      {
+        "name": "mark",
+        "value": "0 1px 2px oklch(0.2 0.06 258 / 0.3)",
+        "purpose": "The brand mark tile in the header."
+      },
+      {
+        "name": "focus-halo",
+        "value": "0 0 0 3px var(--accent-soft)",
+        "purpose": "Focused inputs and an open select."
+      },
+      {
+        "name": "focus-halo-danger",
+        "value": "0 0 0 3px var(--danger-soft)",
+        "purpose": "Focused invalid inputs."
+      }
+    ],
+    "motion": [
+      {
+        "name": "state",
+        "value": "150ms cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Colour, border and halo transitions on every control; chevron rotation on the select."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Brand Mark",
+      "kind": "custom",
+      "refersTo": "logo-mark",
+      "description": "Accent tile with braces around two ruled lines; also the favicon.",
+      "html": "<span class=\"ds-logo\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9 5.5c-1.7 0-2.2.8-2.2 2.2v1.9c0 1.1-.6 1.9-1.8 2.4 1.2.5 1.8 1.3 1.8 2.4v1.9c0 1.4.5 2.2 2.2 2.2M15 5.5c1.7 0 2.2.8 2.2 2.2v1.9c0 1.1.6 1.9 1.8 2.4-1.2.5-1.8 1.3-1.8 2.4v1.9c0 1.4-.5 2.2-2.2 2.2M10.2 10h3.6M10.2 14h3.6\"/></svg></span>",
+      "css": ".ds-logo { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 6px; background: var(--accent); color: var(--on-accent); box-shadow: 0 1px 2px oklch(0.2 0.06 258 / 0.3); }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Every answer field: label above, 36px input, error text below.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Property name</span><input class=\"ds-input ds-mono\" value=\"first_name\"></label><label class=\"ds-field\"><span class=\"ds-field-label\">Minimum length</span><input class=\"ds-input\" value=\"abc\" aria-invalid=\"true\"><span class=\"ds-error\">Enter a whole number.</span></label>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; font: 0.875rem ui-sans-serif, system-ui, sans-serif; } .ds-field-label { font-size: 0.8125rem; color: var(--ink-muted); } .ds-input { height: 36px; width: 100%; border-radius: 5px; border: 1px solid var(--rule-strong); background: var(--sheet); padding: 0 10px; font: 0.875rem ui-sans-serif, system-ui, sans-serif; color: var(--ink); transition: border-color 150ms, box-shadow 150ms; } .ds-input:hover { border-color: var(--ink-muted); } .ds-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); outline: none; } .ds-input[aria-invalid=\"true\"] { border-color: var(--danger); } .ds-input[aria-invalid=\"true\"]:focus { box-shadow: 0 0 0 3px var(--danger-soft); } .ds-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.8125rem; font-weight: 500; } .ds-error { font-size: 0.75rem; color: var(--danger); }"
+    },
+    {
+      "name": "Add Button",
+      "kind": "button",
+      "refersTo": "button-add",
+      "description": "Dashed slot for adding a property or a choice.",
+      "html": "<button class=\"ds-btn ds-btn-add\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 5v14M5 12h14\"/></svg>Add property</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border-radius: 5px; font: 500 0.875rem/1.25rem ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: color 150ms, background-color 150ms, border-color 150ms; } .ds-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; } .ds-btn-add { border: 1px dashed var(--rule-strong); background: transparent; color: var(--ink-muted); } .ds-btn-add:hover { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }"
+    },
+    {
+      "name": "Icon Buttons",
+      "kind": "button",
+      "refersTo": "button-icon",
+      "description": "Row actions on a property card: move up, move down, remove.",
+      "html": "<div class=\"ds-row\"><button class=\"ds-icon-btn\" aria-label=\"Move up\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 19V5M6 11l6-6 6 6\"/></svg></button><button class=\"ds-icon-btn\" aria-label=\"Move down\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 5v14M6 13l6 6 6-6\"/></svg></button><button class=\"ds-icon-btn ds-icon-btn-remove\" aria-label=\"Remove\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 6l12 12M18 6L6 18\"/></svg></button></div>",
+      "css": ".ds-row { display: flex; gap: 2px; } .ds-icon-btn { display: grid; place-items: center; width: 32px; height: 32px; border: 0; border-radius: 5px; background: transparent; color: var(--ink-muted); cursor: pointer; transition: color 150ms, background-color 150ms; } .ds-icon-btn:hover { background: var(--sunken); color: var(--ink); } .ds-icon-btn-remove:hover { background: var(--danger-soft); color: var(--danger); } .ds-icon-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }"
+    },
+    {
+      "name": "Checkbox",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Custom 16px checkbox; checked fills with accent.",
+      "html": "<label class=\"ds-check\"><input type=\"checkbox\" checked><span>'first_name' is required</span></label>",
+      "css": ".ds-check { display: inline-flex; align-items: center; gap: 8px; font: 0.875rem ui-sans-serif, system-ui, sans-serif; color: var(--ink); cursor: pointer; } .ds-check input { appearance: none; width: 16px; height: 16px; margin: 0; border: 1px solid var(--rule-strong); border-radius: 4px; background: var(--sheet) center / 12px no-repeat; cursor: pointer; transition: background-color 150ms, border-color 150ms; } .ds-check:hover input { border-color: var(--ink-muted); } .ds-check input:checked { border-color: var(--accent); background-color: var(--accent); background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E\"); } .ds-check:hover input:checked { border-color: var(--accent-hover); background-color: var(--accent-hover); } .ds-check input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }"
+    },
+    {
+      "name": "Property Card",
+      "kind": "card",
+      "refersTo": "card-property",
+      "description": "One property: a clean sheet with a recessed type body set flush below.",
+      "html": "<section class=\"ds-card\"><div class=\"ds-card-row\"><code class=\"ds-card-name\">first_name</code><span class=\"ds-card-type\">string</span></div><div class=\"ds-card-body\">Constraints for 'first_name'</div></section>",
+      "css": ".ds-card { display: flex; flex-direction: column; gap: 16px; padding: 16px; overflow: hidden; border: 1px solid var(--rule); border-radius: 6px; background: var(--sheet); box-shadow: 0 1px 2px oklch(0.2 0.05 258 / 0.06); color: var(--ink); font: 0.875rem ui-sans-serif, system-ui, sans-serif; } .ds-card-row { display: flex; justify-content: space-between; gap: 12px; } .ds-card-name, .ds-card-type { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.8125rem; } .ds-card-name { font-weight: 500; } .ds-card-type { color: var(--ink-muted); } .ds-card-body { margin: 0 -16px -16px; padding: 16px; border-top: 1px solid var(--rule); background: color-mix(in oklch, var(--sunken) 60%, transparent); color: var(--ink-muted); font-size: 0.8125rem; }"
+    },
+    {
+      "name": "Source Chips",
+      "kind": "chip",
+      "refersTo": "chip-source",
+      "description": "Toggle chips choosing a computed value's inputs, numbered in order.",
+      "html": "<div class=\"ds-chips\"><button class=\"ds-chip\" aria-pressed=\"true\"><span class=\"ds-chip-badge\">1</span>first_name</button><button class=\"ds-chip\" aria-pressed=\"false\">last_name</button></div>",
+      "css": ".ds-chips { display: flex; flex-wrap: wrap; gap: 6px; } .ds-chip { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border: 1px solid var(--rule-strong); border-radius: 5px; background: var(--sheet); color: var(--ink-muted); font: 0.75rem ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; cursor: pointer; transition: color 150ms, background-color 150ms, border-color 150ms; } .ds-chip:hover { border-color: var(--ink-muted); color: var(--ink); } .ds-chip[aria-pressed=\"true\"] { border-color: var(--accent); background: var(--accent-soft); color: var(--ink); } .ds-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; } .ds-chip-badge { display: grid; place-items: center; width: 16px; height: 16px; border-radius: 3px; background: var(--accent); color: var(--on-accent); font: 600 0.6875rem ui-sans-serif, system-ui, sans-serif; }"
+    },
+    {
+      "name": "Select Listbox",
+      "kind": "custom",
+      "refersTo": "select-option-active",
+      "description": "Open type select: input-styled trigger with halo, popover list with groups.",
+      "html": "<div class=\"ds-select\"><button class=\"ds-select-trigger\" aria-expanded=\"true\"><span>string</span><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 9l6 6 6-6\"/></svg></button><div class=\"ds-select-list\" role=\"listbox\"><div class=\"ds-select-group\">Text</div><div class=\"ds-option ds-option-active\" role=\"option\" aria-selected=\"true\">string<svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12.5l4.5 4.5L19 7.5\"/></svg></div><div class=\"ds-option\" role=\"option\">choice</div><div class=\"ds-select-group\">Numbers</div><div class=\"ds-option\" role=\"option\">integer</div></div></div>",
+      "css": ".ds-select { position: relative; width: 176px; font: 0.8125rem ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; } .ds-select-trigger { display: flex; width: 100%; height: 36px; align-items: center; justify-content: space-between; padding: 0 10px; border: 1px solid var(--accent); border-radius: 5px; background: var(--sheet); color: var(--ink); box-shadow: 0 0 0 3px var(--accent-soft); font: inherit; cursor: pointer; } .ds-select-trigger svg { color: var(--ink-muted); transform: rotate(180deg); transition: transform 150ms; } .ds-select-list { margin-top: 4px; padding: 4px; border: 1px solid var(--rule-strong); border-radius: 5px; background: var(--sheet); box-shadow: 0 8px 24px -6px oklch(0.2 0.05 258 / 0.25), 0 2px 6px -2px oklch(0.2 0.05 258 / 0.12); } .ds-select-group { padding: 8px 8px 4px; font: 500 0.75rem ui-sans-serif, system-ui, sans-serif; color: var(--ink-muted); } .ds-option { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 6px 8px; border-radius: 4px; color: var(--ink); cursor: pointer; } .ds-option:hover, .ds-option-active { background: var(--accent-soft); } .ds-option svg { color: var(--accent); }"
+    },
+    {
+      "name": "Header and Theme Switch",
+      "kind": "nav",
+      "refersTo": "theme-switch",
+      "description": "Sticky header: wordmark and the system/light/dark switch.",
+      "html": "<header class=\"ds-header\"><h1 class=\"ds-wordmark\"><span class=\"ds-logo\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9 5.5c-1.7 0-2.2.8-2.2 2.2v1.9c0 1.1-.6 1.9-1.8 2.4 1.2.5 1.8 1.3 1.8 2.4v1.9c0 1.4.5 2.2 2.2 2.2M15 5.5c1.7 0 2.2.8 2.2 2.2v1.9c0 1.1.6 1.9 1.8 2.4-1.2.5-1.8 1.3-1.8 2.4v1.9c0 1.4-.5 2.2-2.2 2.2M10.2 10h3.6M10.2 14h3.6\"/></svg></span><span class=\"ds-wordmark-name\">schemify</span><span class=\"ds-wordmark-rule\"></span><span class=\"ds-wordmark-sub\">generate</span></h1><fieldset class=\"ds-theme\"><label class=\"ds-theme-seg ds-theme-on\" title=\"System theme\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 5h18v11H3zM8 20h8M12 16v4\"/></svg></label><label class=\"ds-theme-seg\" title=\"Light theme\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4\"/></svg></label><label class=\"ds-theme-seg\" title=\"Dark theme\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z\"/></svg></label></fieldset></header>",
+      "css": ".ds-header { display: flex; height: 56px; align-items: center; justify-content: space-between; gap: 16px; padding: 0 16px; border-bottom: 1px solid var(--rule); background: color-mix(in oklch, var(--sheet) 90%, transparent); backdrop-filter: blur(4px); } .ds-logo { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 6px; background: var(--accent); color: var(--on-accent); box-shadow: 0 1px 2px oklch(0.2 0.06 258 / 0.3); } .ds-wordmark { display: flex; align-items: center; gap: 10px; margin: 0; color: var(--ink); } .ds-wordmark-name { font: 600 1rem ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.02em; } .ds-wordmark-rule { width: 1px; height: 16px; background: var(--rule-strong); } .ds-wordmark-sub { font: 400 0.8125rem ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; color: var(--ink-muted); } .ds-theme { display: flex; margin: 0; padding: 2px; border: 1px solid var(--rule); border-radius: 6px; background: var(--sunken); } .ds-theme-seg { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 4px; color: var(--ink-muted); cursor: pointer; transition: color 150ms, background-color 150ms; } .ds-theme-seg:hover { color: var(--ink); } .ds-theme-on { background: var(--accent-soft); color: var(--accent); }"
+    },
+    {
+      "name": "Blueprint Panel",
+      "kind": "custom",
+      "refersTo": "panel-print",
+      "description": "The live JSON as a navy print with status, filename, Copy and Download.",
+      "html": "<aside class=\"ds-print\"><div class=\"ds-print-bar\"><div class=\"ds-print-meta\"><span class=\"ds-print-dot\"></span><span class=\"ds-print-file\">person.json</span><span class=\"ds-print-status\">Valid schema</span></div><div class=\"ds-print-actions\"><button class=\"ds-btn ds-print-copy\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9 9h10v10H9zM5 15V5h10\"/></svg>Copy</button><button class=\"ds-btn ds-print-download\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 4v11M7 10l5 5 5-5M5 20h14\"/></svg>Download</button></div></div><pre class=\"ds-print-json\">{\n  \"title\": \"person\",\n  \"type\": \"object\"\n}</pre></aside>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border-radius: 5px; font: 500 0.875rem/1.25rem ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: color 150ms, background-color 150ms, border-color 150ms; } .ds-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; } .ds-print { overflow: hidden; border: 1px solid var(--print-rule); border-radius: 6px; background: var(--print); color: var(--print-ink); box-shadow: 0 10px 30px -12px oklch(0.2 0.06 258 / 0.45); } .ds-print-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 8px 8px 16px; border-bottom: 1px solid var(--print-rule); } .ds-print-meta { display: flex; align-items: center; gap: 10px; min-width: 0; } .ds-print-dot { width: 8px; height: 8px; border-radius: 9999px; background: oklch(0.78 0.13 160); } .ds-print-file { font: 0.8125rem ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; } .ds-print-status { font: 0.75rem ui-sans-serif, system-ui, sans-serif; color: color-mix(in oklch, var(--print-ink) 65%, transparent); } .ds-print-actions { display: flex; gap: 4px; } .ds-print .ds-btn { height: 32px; border: 0; } .ds-print-copy { background: transparent; color: color-mix(in oklch, var(--print-ink) 80%, transparent); } .ds-print-copy:hover { background: var(--print-rule); color: var(--print-ink); } .ds-print-download { background: var(--print-ink); color: var(--print); } .ds-print-json { margin: 0; padding: 16px; font: 0.75rem/1.625 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; color: var(--print-ink); white-space: pre; }"
+    },
+    {
+      "name": "Footer Link",
+      "kind": "nav",
+      "refersTo": "link-footer",
+      "description": "Copyright line with the author's GitHub link.",
+      "html": "<footer class=\"ds-footer\"><span>© 2026</span><a class=\"ds-footer-link\" href=\"https://github.com/aaltatan\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 3.5c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 10.5c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4M9 18c-4.51 2-5-2-7-2\"/></svg>Abdullah Altatan</a></footer>",
+      "css": ".ds-footer { position: sticky; bottom: 0; height: 40px; padding: 0 16px; border-top: 1px solid var(--rule); background: color-mix(in oklch, var(--sheet) 90%, transparent); backdrop-filter: blur(4px); display: flex; align-items: center; gap: 8px; font: 0.75rem ui-sans-serif, system-ui, sans-serif; color: var(--ink-muted); } .ds-footer-link { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; color: var(--ink); text-decoration: underline; text-decoration-color: var(--rule-strong); text-underline-offset: 4px; transition: color 150ms, text-decoration-color 150ms; } .ds-footer-link:hover { color: var(--accent); text-decoration-color: var(--accent); } .ds-footer-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Drafting Sheet",
+    "overview": "The editor is a spec sheet pinned to a drafting table. Cool blue-grey paper carries a faint 24px graph grid; property cards are clean sheets laid on it, ruled with 1px hairlines and lifted by the softest navy-tinted shadow. One ink-blue pen marks everything that is live: focus, selection, a checked box, a pressed source, the add affordance. The same ink fills the brand mark, a small tile with a schema's braces around two ruled lines. Everything else is graphite: ink and muted ink on paper.\n\nBeside the sheet sits the blueprint print: the live JSON Schema, navy with pale ink, in both themes. It is the product; the sheet is how you get there. In dark mode the whole table turns to blueprint navy and the print sinks one step deeper so it still reads as its own object.\n\nDensity is that of a working tool: 36px controls, 13-14px text, 12-16px gaps. The system rejects the generic neutral-grey SaaS form: no flat grey canvas, no heavy card chrome, no second accent.",
+    "keyCharacteristics": [
+      "Cool blue-grey paper with a 24px graph grid behind everything.",
+      "One ink-blue accent; danger red only where an answer is wrong.",
+      "1px hairline rules, 5-6px corners, soft navy-tinted shadows.",
+      "Mono only for data (keys, types, values, filenames, JSON); system sans for the rest.",
+      "The JSON panel is a navy blueprint print in light and dark alike."
+    ],
+    "rules": [
+      {
+        "name": "The One Ink Rule",
+        "body": "The accent is the only hue that marks interaction, and the only fill the brand mark wears. If something is live, focused, chosen or pressed, it is ink-blue; nothing else gets a colour.",
+        "section": "colors"
+      },
+      {
+        "name": "The Correction Red Rule",
+        "body": "Danger red appears only on the field whose answer is wrong and on the remove control's hover. It never decorates.",
+        "section": "colors"
+      },
+      {
+        "name": "The Blueprint Print Rule",
+        "body": "The JSON output is always navy with pale ink, whatever the theme. It is a print of the drawing, not part of the sheet.",
+        "section": "colors"
+      },
+      {
+        "name": "The Mono Means Data Rule",
+        "body": "Mono is set only on what becomes JSON: keys, type names, values, function names, the filename and the schema itself. Questions, labels and buttons are sans.",
+        "section": "typography"
+      },
+      {
+        "name": "The Question Label Rule",
+        "body": "Labels are sentence-case questions in muted ink at 13px, never uppercase, never letter-spaced.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tinted Shadow Rule",
+        "body": "Every shadow is navy-tinted and soft. A shadow with a hard offset or a neutral grey/black colour is not part of this world.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do keep the 24px graph grid on the paper behind every surface.",
+      "Do use the accent only for interaction states (focus, selection, checked, pressed, add-on-hover, link-on-hover) and the brand mark.",
+      "Do set keys, types, values, filenames and JSON in mono at 13px (12px in the blueprint), and everything else in system sans.",
+      "Do put an error under the field that caused it, in 12px correction red, with the field's border and halo turned red.",
+      "Do use 1px rules, 5px corners on controls and 6px on containers.",
+      "Do tint every shadow with navy (hue 258) and keep it soft.",
+      "Do keep the blueprint panel navy with pale ink in both themes."
+    ],
+    "donts": [
+      "Don't introduce a second accent hue or use the accent decoratively.",
+      "Don't fall back to a flat neutral-grey canvas or untinted grey shadows; the neutrals are blue-grey.",
+      "Don't use hard offset shadows, pill-shaped controls or borders heavier than 1px.",
+      "Don't use mono for labels, questions or buttons.",
+      "Don't add uppercase, letter-spaced labels or eyebrow text above fields or sections.",
+      "Don't use glyph or emoji icons; draw icons as 24px line SVGs at 1.75 stroke.",
+      "Don't hard-code colours outside the token set; every surface reads from the theme's custom properties."
+    ]
+  }
+}

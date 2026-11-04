@@ -4,6 +4,9 @@
  * A parser turns an answer into a value, or throws an `Error` with a readable message.
  */
 
+import Ajv2020, { type ErrorObject, type ValidateFunction } from "ajv/dist/2020.js";
+import addFormats from "ajv-formats";
+import { pyRepr } from "./computers.ts";
 import meta from "./meta.json";
 import type { Schema } from "./models.ts";
 
@@ -105,21 +108,87 @@ export function toChoices(text: string): string[] {
   return choices;
 }
 
-/** Parse computer options, a JSON object: `{"sep": ", "}`. */
-export function toOptions(text: string): Record<string, unknown> {
-  let options: unknown;
+const DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+const DATETIME =
+  /^(\d{4}-\d{2}-\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(\.\d{1,6})?)?)?(Z|[+-]\d{2}:\d{2})?$/;
+
+function isDate(text: string): boolean {
+  const [, y, m, d] = (DATE.exec(text) ?? []).map(Number);
+
+  if (!y || !m || !d) {
+    return false;
+  }
+
+  const days = [31, isLeap(y) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][m - 1] ?? 0;
+
+  return d <= days;
+}
+
+function isLeap(year: number): boolean {
+  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+}
+
+/** Parse an ISO date, returned as an ISO string: `"2026-11-04"`. */
+export function toDate(text: string): string {
+  const trimmed = text.trim();
+
+  if (!isDate(trimmed)) {
+    throw new Error(`Invalid isoformat string: '${trimmed}'`);
+  }
+
+  return trimmed;
+}
+
+/**
+ * Parse an ISO datetime, returned as an RFC 3339 string.
+ * A datetime without offset is taken as local time, RFC 3339 requires the offset.
+ */
+export function toDatetime(text: string): string {
+  const trimmed = text.trim();
+  const match = DATETIME.exec(trimmed);
+  const [, day = "", h = "00", mi = "00", s = "00", fraction = "", zone] = match ?? [];
+
+  if (!match || !isDate(day) || Number(h) > 23 || Number(mi) > 59 || Number(s) > 59) {
+    throw new Error(`Invalid isoformat string: '${trimmed}'`);
+  }
+
+  const micro = fraction ? `.${fraction.slice(1).padEnd(6, "0")}` : "";
+  const offset = zone === "Z" ? "+00:00" : (zone ?? localOffset(`${day}T${h}:${mi}:${s}`));
+
+  return `${day}T${h}:${mi}:${s}${micro}${offset}`;
+}
+
+function localOffset(naive: string): string {
+  const minutes = -new Date(naive).getTimezoneOffset();
+  const two = (n: number) => String(Math.floor(n)).padStart(2, "0");
+
+  return `${minutes >= 0 ? "+" : "-"}${two(Math.abs(minutes) / 60)}:${two(Math.abs(minutes) % 60)}`;
+}
+
+/**
+ * Parse one computer option typed in its own input, typed by its example value:
+ * a string or `null` example keeps the text, a number, boolean, list or object one parses JSON,
+ * and Python's `"value"` placeholder (an `Any` parameter) parses JSON, else keeps the text.
+ */
+export function toOption(text: string, example: unknown): unknown {
+  if (example === "value") {
+    try {
+      return JSON.parse(text);
+    } catch {
+      return text;
+    }
+  }
+
+  if (typeof example === "string" || example === null) {
+    return text;
+  }
 
   try {
-    options = JSON.parse(text);
+    return JSON.parse(text);
   } catch (e) {
     throw new Error(`Invalid JSON: ${(e as Error).message}`);
   }
-
-  if (typeof options !== "object" || options === null || Array.isArray(options)) {
-    throw new Error("Options must be a JSON object");
-  }
-
-  return options as Record<string, unknown>;
 }
 
 // -----------------------
@@ -186,4 +255,90 @@ export function checkBounds(schema: Schema): string | null {
   }
 
   return null;
+}
+
+// -----------------------
+// json schema
+// -----------------------
+
+// the formats Python's jsonschema checks without extras, email only needs an `@` there too
+const ajv = addFormats(new Ajv2020({ strict: false, verbose: true, addUsedSchema: false }), [
+  "date",
+  "time",
+  "ipv4",
+  "ipv6",
+  "regex",
+  "uuid",
+]).addFormat("email", (text: string) => text.includes("@"));
+
+ajv.addFormat("idn-email", (text: string) => text.includes("@"));
+
+const compiled = new WeakMap<Schema, ValidateFunction>();
+
+/** Return why `value` does not match `schema`, or `null` when it does, like `check_value`. */
+export function checkValue(schema: Schema, value: unknown): string | null {
+  let validate = compiled.get(schema);
+
+  try {
+    validate ??= ajv.compile(schema);
+  } catch (e) {
+    return (e as Error).message;
+  }
+
+  compiled.set(schema, validate);
+
+  const error = validate(value) ? undefined : validate.errors?.[0];
+
+  return error ? message(error, value) : null;
+}
+
+/** Ajv's first error in jsonschema's words: `'R' is too short`. */
+function message(error: ErrorObject, root: unknown): string {
+  const value = error.instancePath
+    .split("/")
+    .slice(1)
+    .reduce<unknown>(
+      (at, key) => (at as Record<string, unknown>)[key.replaceAll("~1", "/").replaceAll("~0", "~")],
+      root,
+    );
+  const params = error.params as Record<string, unknown>;
+  const schema = error.schema;
+  const v = pyRepr(value);
+
+  switch (error.keyword) {
+    case "type":
+      return `${v} is not of type ${pyRepr(schema)}`;
+    case "minLength":
+    case "minItems":
+      return `${v} is too short`;
+    case "maxLength":
+    case "maxItems":
+      return `${v} is too long`;
+    case "minimum":
+      return `${v} is less than the minimum of ${pyRepr(schema)}`;
+    case "maximum":
+      return `${v} is greater than the maximum of ${pyRepr(schema)}`;
+    case "exclusiveMinimum":
+      return `${v} is less than or equal to the minimum of ${pyRepr(schema)}`;
+    case "exclusiveMaximum":
+      return `${v} is greater than or equal to the maximum of ${pyRepr(schema)}`;
+    case "multipleOf":
+      return `${v} is not a multiple of ${pyRepr(schema)}`;
+    case "format":
+      return `${v} is not a ${pyRepr(params.format)}`;
+    case "pattern":
+      return `${v} does not match ${pyRepr(schema)}`;
+    case "enum":
+      return `${v} is not one of ${pyRepr(schema)}`;
+    case "required":
+      return `${pyRepr(params.missingProperty)} is a required property`;
+    case "additionalProperties":
+      return `Additional properties are not allowed (${pyRepr(params.additionalProperty)} was unexpected)`;
+    case "uniqueItems":
+      return `${v} has non-unique elements`;
+    case "not":
+      return `${v} should not be valid under ${pyRepr(schema)}`;
+    default:
+      return `${v} ${error.message ?? "is not valid"}`;
+  }
 }
