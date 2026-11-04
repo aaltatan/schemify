@@ -1,0 +1,26 @@
+{
+  // One project for the app, tests and config files, so `tsc --noEmit` checks everything.
+  "compilerOptions": {
+    "target": "ES2024",
+    "lib": ["ES2024", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "moduleDetection": "force",
+    "jsx": "react-jsx",
+    "types": ["node", "vite/client"],
+    "noEmit": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
+
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "verbatimModuleSyntax": true,
+    "allowImportingTsExtensions": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true
+  },
+  "include": ["src", "vite.config.ts"]
+}

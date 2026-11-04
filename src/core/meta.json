@@ -1,0 +1,752 @@
+{
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "types": [
+    "array",
+    "boolean",
+    "date",
+    "datetime",
+    "enum",
+    "integer",
+    "number",
+    "object",
+    "string"
+  ],
+  "constraints": {
+    "string": [
+      [
+        "minLength",
+        "Minimum length"
+      ],
+      [
+        "maxLength",
+        "Maximum length"
+      ],
+      [
+        "pattern",
+        "Regular expression pattern"
+      ],
+      [
+        "not",
+        "Blocked values, comma separated"
+      ]
+    ],
+    "number": [
+      [
+        "exclusiveMinimum",
+        "Greater than"
+      ],
+      [
+        "minimum",
+        "Greater than or equal to"
+      ],
+      [
+        "exclusiveMaximum",
+        "Less than"
+      ],
+      [
+        "maximum",
+        "Less than or equal to"
+      ],
+      [
+        "multipleOf",
+        "Multiple of"
+      ]
+    ],
+    "array": [
+      [
+        "minItems",
+        "Minimum items"
+      ],
+      [
+        "maxItems",
+        "Maximum items"
+      ]
+    ]
+  },
+  "groups": {
+    "Text": [
+      "join",
+      "concat",
+      "template",
+      "upper",
+      "lower",
+      "title",
+      "capitalize",
+      "trim",
+      "replace",
+      "slice",
+      "initials",
+      "slug",
+      "length",
+      "pad",
+      "mask"
+    ],
+    "Numbers": [
+      "sum",
+      "subtract",
+      "multiply",
+      "divide",
+      "average",
+      "min",
+      "max",
+      "abs",
+      "round",
+      "percent",
+      "percent_of",
+      "expr"
+    ],
+    "Number to words": [
+      "words"
+    ],
+    "Dates": [
+      "today",
+      "now",
+      "add_days",
+      "add_months",
+      "add_years",
+      "days_between",
+      "age",
+      "year",
+      "month",
+      "day",
+      "weekday",
+      "format_date",
+      "start_of_month",
+      "end_of_month"
+    ],
+    "Logic, lookup and misc": [
+      "coalesce",
+      "if_else",
+      "equals",
+      "lookup",
+      "constant",
+      "count",
+      "count_if",
+      "unique",
+      "uuid"
+    ]
+  },
+  "computers": {
+    "abs": {
+      "signature": "abs(value: Any) -> Any",
+      "summary": "Return the absolute value.",
+      "examples": [
+        {
+          "value": "value"
+        },
+        null
+      ]
+    },
+    "add_days": {
+      "signature": "add_days(value: str, days: int) -> str",
+      "summary": "Add (or subtract) days to an ISO date.",
+      "examples": [
+        {
+          "value": "text",
+          "days": 1
+        },
+        {
+          "days": 1
+        },
+        null
+      ]
+    },
+    "add_months": {
+      "signature": "add_months(value: str, months: int) -> str",
+      "summary": "Add months, clamping to the month end: `add_months(\"2026-01-31\", 1) == \"2026-02-28\"`.",
+      "examples": [
+        {
+          "value": "text",
+          "months": 1
+        },
+        {
+          "months": 1
+        },
+        null
+      ]
+    },
+    "add_years": {
+      "signature": "add_years(value: str, years: int) -> str",
+      "summary": "Add years, Feb 29 becomes Feb 28 on a non leap year.",
+      "examples": [
+        {
+          "value": "text",
+          "years": 1
+        },
+        {
+          "years": 1
+        },
+        null
+      ]
+    },
+    "age": {
+      "signature": "age(birth_date: str, on: str | None = None) -> int",
+      "summary": "Whole years from `birth_date` to `on` (today by default).",
+      "examples": [
+        {
+          "birth_date": "text",
+          "on": null
+        },
+        {
+          "on": null
+        },
+        null
+      ]
+    },
+    "average": {
+      "signature": "average(*values: Any) -> float",
+      "summary": "Return the mean of the values, lists are spread.",
+      "examples": [
+        null,
+        null
+      ]
+    },
+    "capitalize": {
+      "signature": "capitalize(value: Any) -> str",
+      "summary": "Capitalize the first letter.",
+      "examples": [
+        {
+          "value": "value"
+        },
+        null
+      ]
+    },
+    "coalesce": {
+      "signature": "coalesce(*values: Any) -> Any",
+      "summary": "Return the first non-empty value, use `?` paths so missing ones are `None`.",
+      "examples": [
+        null,
+        null
+      ]
+    },
+    "concat": {
+      "signature": "concat(*values: Any) -> str",
+      "summary": "Join the non-empty values with nothing between them.",
+      "examples": [
+        null,
+        null
+      ]
+    },
+    "constant": {
+      "signature": "constant(value: Any) -> Any",
+      "summary": "Return `value` from the options, always the same.",
+      "examples": [
+        {
+          "value": "value"
+        },
+        null
+      ]
+    },
+    "count": {
+      "signature": "count(values: list[typing.Any]) -> int",
+      "summary": "Return the number of items.",
+      "examples": [
+        {
+          "values": []
+        },
+        null
+      ]
+    },
+    "count_if": {
+      "signature": "count_if(values: list[typing.Any], value: Any) -> int",
+      "summary": "How many items equal `value`.",
+      "examples": [
+        {
+          "values": [],
+          "value": "value"
+        },
+        {
+          "value": "value"
+        },
+        null
+      ]
+    },
+    "day": {
+      "signature": "day(value: str) -> int",
+      "summary": "Return the day of the month of an ISO date.",
+      "examples": [
+        {
+          "value": "text"
+        },
+        null
+      ]
+    },
+    "days_between": {
+      "signature": "days_between(start: str, end: str) -> int",
+      "summary": "Days from `start` to `end`, negative when `end` is before.",
+      "examples": [
+        {
+          "start": "text",
+          "end": "text"
+        },
+        {
+          "end": "text"
+        },
+        null
+      ]
+    },
+    "divide": {
+      "signature": "divide(value: Any, divisor: Any) -> float",
+      "summary": "Divide, a zero divisor is an error.",
+      "examples": [
+        {
+          "value": "value",
+          "divisor": "value"
+        },
+        {
+          "divisor": "value"
+        },
+        null
+      ]
+    },
+    "end_of_month": {
+      "signature": "end_of_month(value: str) -> str",
+      "summary": "Return the last day of the month of an ISO date.",
+      "examples": [
+        {
+          "value": "text"
+        },
+        null
+      ]
+    },
+    "equals": {
+      "signature": "equals(value: Any, other: Any) -> bool",
+      "summary": "Whether both values are equal.",
+      "examples": [
+        {
+          "value": "value",
+          "other": "value"
+        },
+        {
+          "other": "value"
+        },
+        null
+      ]
+    },
+    "expr": {
+      "signature": "expr(expr: str, **values: Any) -> Any",
+      "summary": "Evaluate a safe expression of the named sources: `\"round(qty * price * 1.15, 2)\"`.",
+      "examples": [
+        {
+          "expr": "text"
+        },
+        {},
+        {}
+      ]
+    },
+    "format_date": {
+      "signature": "format_date(value: str, fmt: str = '%d/%m/%Y') -> str",
+      "summary": "Format an ISO date or datetime with `strftime` codes.",
+      "examples": [
+        {
+          "value": "text",
+          "fmt": "%d/%m/%Y"
+        },
+        {
+          "fmt": "%d/%m/%Y"
+        },
+        null
+      ]
+    },
+    "if_else": {
+      "signature": "if_else(condition: Any, then: Any, otherwise: Any) -> Any",
+      "summary": "`then` when `condition` is truthy, else `otherwise`.",
+      "examples": [
+        {
+          "condition": "value",
+          "then": "value",
+          "otherwise": "value"
+        },
+        {
+          "then": "value",
+          "otherwise": "value"
+        },
+        {
+          "otherwise": "value"
+        },
+        null
+      ]
+    },
+    "initials": {
+      "signature": "initials(*values: Any, sep: str = '') -> str",
+      "summary": "Return the first letter of each word: `initials(\"Rama Ali\") == \"RA\"`.",
+      "examples": [
+        {
+          "sep": ""
+        },
+        {
+          "sep": ""
+        },
+        {
+          "sep": ""
+        }
+      ]
+    },
+    "join": {
+      "signature": "join(*values: Any, sep: str = ' ') -> str",
+      "summary": "Join the non-empty values: `join(\"Rama\", None, \"Ali\") == \"Rama Ali\"`.",
+      "examples": [
+        {
+          "sep": " "
+        },
+        {
+          "sep": " "
+        },
+        {
+          "sep": " "
+        }
+      ]
+    },
+    "length": {
+      "signature": "length(value: Any) -> int",
+      "summary": "Return the length of a string or a list.",
+      "examples": [
+        {
+          "value": "value"
+        },
+        null
+      ]
+    },
+    "lookup": {
+      "signature": "lookup(key: Any, map: dict[str, typing.Any], fallback: Any = <object object at 0x000001A3531C9100>) -> Any",
+      "summary": "Map a value through `map`: `{\"SY\": \"Syria\"}`, keys are compared as strings.",
+      "examples": [
+        {
+          "key": "value",
+          "map": {},
+          "fallback": "value"
+        },
+        {
+          "map": {},
+          "fallback": "value"
+        },
+        {
+          "fallback": "value"
+        },
+        null
+      ]
+    },
+    "lower": {
+      "signature": "lower(value: Any) -> str",
+      "summary": "Lower case.",
+      "examples": [
+        {
+          "value": "value"
+        },
+        null
+      ]
+    },
+    "mask": {
+      "signature": "mask(value: Any, keep: int = 4, char: str = '*') -> str",
+      "summary": "Hide all but the last `keep` characters: `mask(\"12345678\") == \"****5678\"`.",
+      "examples": [
+        {
+          "value": "value",
+          "keep": 4,
+          "char": "*"
+        },
+        {
+          "keep": 4,
+          "char": "*"
+        },
+        {
+          "char": "*"
+        },
+        null
+      ]
+    },
+    "max": {
+      "signature": "max(*values: Any) -> Any",
+      "summary": "Return the largest value, lists are spread.",
+      "examples": [
+        null,
+        null
+      ]
+    },
+    "min": {
+      "signature": "min(*values: Any) -> Any",
+      "summary": "Return the smallest value, lists are spread.",
+      "examples": [
+        null,
+        null
+      ]
+    },
+    "month": {
+      "signature": "month(value: str) -> int",
+      "summary": "Return the month (1 to 12) of an ISO date.",
+      "examples": [
+        {
+          "value": "text"
+        },
+        null
+      ]
+    },
+    "multiply": {
+      "signature": "multiply(*values: Any) -> Any",
+      "summary": "Multiply the values, lists are spread.",
+      "examples": [
+        null,
+        null
+      ]
+    },
+    "now": {
+      "signature": "now() -> str",
+      "summary": "Return the current local RFC 3339 datetime: `2026-11-04T10:30:00+03:00`.",
+      "examples": [
+        null
+      ]
+    },
+    "pad": {
+      "signature": "pad(value: Any, width: int, char: str = '0') -> str",
+      "summary": "Pad on the left: `pad(42, 5) == \"00042\"`.",
+      "examples": [
+        {
+          "value": "value",
+          "width": 1,
+          "char": "0"
+        },
+        {
+          "width": 1,
+          "char": "0"
+        },
+        {
+          "char": "0"
+        },
+        null
+      ]
+    },
+    "percent": {
+      "signature": "percent(part: Any, whole: Any) -> float",
+      "summary": "How many percent `part` is of `whole`: `percent(1, 4) == 25`.",
+      "examples": [
+        {
+          "part": "value",
+          "whole": "value"
+        },
+        {
+          "whole": "value"
+        },
+        null
+      ]
+    },
+    "percent_of": {
+      "signature": "percent_of(value: Any, rate: Any) -> float",
+      "summary": "`rate` percent of `value`, like a tax: `percent_of(200, 15) == 30`.",
+      "examples": [
+        {
+          "value": "value",
+          "rate": "value"
+        },
+        {
+          "rate": "value"
+        },
+        null
+      ]
+    },
+    "replace": {
+      "signature": "replace(value: Any, old: str, new: str) -> str",
+      "summary": "Replace every `old` with `new`.",
+      "examples": [
+        {
+          "value": "value",
+          "old": "text",
+          "new": "text"
+        },
+        {
+          "old": "text",
+          "new": "text"
+        },
+        {
+          "new": "text"
+        },
+        null
+      ]
+    },
+    "round": {
+      "signature": "round(value: Any, digits: int = 2) -> Any",
+      "summary": "Round to `digits` decimals.",
+      "examples": [
+        {
+          "value": "value",
+          "digits": 2
+        },
+        {
+          "digits": 2
+        },
+        null
+      ]
+    },
+    "slice": {
+      "signature": "slice(value: Any, start: int = 0, end: int | None = None) -> Any",
+      "summary": "Part of a string or a list: `slice(\"2026-11-04\", end=4) == \"2026\"`.",
+      "examples": [
+        {
+          "value": "value",
+          "start": 0,
+          "end": null
+        },
+        {
+          "start": 0,
+          "end": null
+        },
+        {
+          "end": null
+        },
+        null
+      ]
+    },
+    "slug": {
+      "signature": "slug(value: Any) -> str",
+      "summary": "Make a URL slug, keeping non latin letters: `slug(\"Hello World!\") == \"hello-world\"`.",
+      "examples": [
+        {
+          "value": "value"
+        },
+        null
+      ]
+    },
+    "start_of_month": {
+      "signature": "start_of_month(value: str) -> str",
+      "summary": "Return the first day of the month of an ISO date.",
+      "examples": [
+        {
+          "value": "text"
+        },
+        null
+      ]
+    },
+    "subtract": {
+      "signature": "subtract(value: Any, *values: Any) -> Any",
+      "summary": "Subtract the other values from the first one.",
+      "examples": [
+        {
+          "value": "value"
+        },
+        null,
+        null
+      ]
+    },
+    "sum": {
+      "signature": "sum(*values: Any) -> Any",
+      "summary": "Add the values, lists are spread: `sum(items[*].price)`.",
+      "examples": [
+        null,
+        null
+      ]
+    },
+    "template": {
+      "signature": "template(template: str, **values: Any) -> str",
+      "summary": "Format `template` with the named sources: `\"{first} {last}\"`.",
+      "examples": [
+        {
+          "template": "text"
+        },
+        {},
+        {}
+      ]
+    },
+    "title": {
+      "signature": "title(value: Any) -> str",
+      "summary": "Capitalize each word.",
+      "examples": [
+        {
+          "value": "value"
+        },
+        null
+      ]
+    },
+    "today": {
+      "signature": "today() -> str",
+      "summary": "Today's ISO date: `2026-11-04`.",
+      "examples": [
+        null
+      ]
+    },
+    "trim": {
+      "signature": "trim(value: Any) -> str",
+      "summary": "Strip the surrounding whitespace.",
+      "examples": [
+        {
+          "value": "value"
+        },
+        null
+      ]
+    },
+    "unique": {
+      "signature": "unique(values: list[typing.Any]) -> list[typing.Any]",
+      "summary": "Return the items without duplicates, in order.",
+      "examples": [
+        {
+          "values": []
+        },
+        null
+      ]
+    },
+    "upper": {
+      "signature": "upper(value: Any) -> str",
+      "summary": "Upper case.",
+      "examples": [
+        {
+          "value": "value"
+        },
+        null
+      ]
+    },
+    "uuid": {
+      "signature": "uuid() -> str",
+      "summary": "Return a random UUID.",
+      "examples": [
+        null
+      ]
+    },
+    "weekday": {
+      "signature": "weekday(value: str, fmt: str = '%A') -> str",
+      "summary": "Return the weekday name of an ISO date: `Wednesday`.",
+      "examples": [
+        {
+          "value": "text",
+          "fmt": "%A"
+        },
+        {
+          "fmt": "%A"
+        },
+        null
+      ]
+    },
+    "words": {
+      "signature": "words(value: Any, lang: str = 'en', to: str = 'cardinal', currency: str | None = None) -> str",
+      "summary": "Spell a number: `words(12) == \"twelve\"`.",
+      "examples": [
+        {
+          "value": "value",
+          "lang": "en",
+          "to": "cardinal",
+          "currency": null
+        },
+        {
+          "lang": "en",
+          "to": "cardinal",
+          "currency": null
+        },
+        {
+          "to": "cardinal",
+          "currency": null
+        },
+        {
+          "currency": null
+        },
+        null
+      ]
+    },
+    "year": {
+      "signature": "year(value: str) -> int",
+      "summary": "Return the year of an ISO date.",
+      "examples": [
+        {
+          "value": "text"
+        },
+        null
+      ]
+    }
+  }
+}
