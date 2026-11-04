@@ -13,6 +13,7 @@ import {
   ARRAY_CONSTRAINTS,
   type Constraint,
   checkBounds,
+  defaultParser,
   NUMBER_CONSTRAINTS,
   STRING_CONSTRAINTS,
   toOption,
@@ -59,6 +60,8 @@ export type Property = {
   name: string;
   label: string;
   description: string;
+  /** Read as JSON, else as text, see `defaultParser`. */
+  default: string;
   required: boolean;
   node: Node;
 };
@@ -115,6 +118,7 @@ export function newProperty(name = ""): Property {
     name,
     label: "",
     description: "",
+    default: "",
     required: true,
     node: newNode("string"),
   };
@@ -319,9 +323,20 @@ function generateObject(node: ObjectNode, path: string, issues: Issues): Schema 
 
     const annotations = { title: property.label.trim(), description: property.description.trim() };
 
+    // a computed property sets its own `default` in `x-compute`
+    const fallback =
+      property.node.type !== "computed" && property.default.trim()
+        ? parse(
+            () => ({ default: defaultParser(propertySchema)(property.default) }),
+            `${propertyPath}.default`,
+            issues,
+          )
+        : {};
+
     properties[name] = {
       ...Object.fromEntries(Object.entries(annotations).filter(([, value]) => value)),
       ...propertySchema,
+      ...fallback,
     };
 
     if (property.required) {

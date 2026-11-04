@@ -14,6 +14,7 @@ import {
   NotSupportedError,
   pyEquals,
   pyRepr,
+  pyStr,
 } from "./computers.ts";
 import type { Issues } from "./generators.ts";
 import type { Schema } from "./models.ts";
@@ -70,19 +71,25 @@ export function kind(schema: Schema): string {
   return schema.type === undefined ? "None" : String(schema.type);
 }
 
-/** The empty answers of `schema`, what Python offers before anything is typed. */
+/**
+ * The answers of `schema` before anything is typed, what Python offers: its `default` for a
+ * text, boolean or enum value, else empty.
+ */
 export function newDraft(schema: Schema): Draft {
   const name = kind(schema);
 
   if (name in TEXT_PARSERS) {
-    return { kind: "text", text: "" };
+    return { kind: "text", text: "default" in schema ? pyStr(schema.default) : "" };
   }
 
   switch (name) {
     case "boolean":
-      return { kind: "boolean", added: true, value: false };
-    case "enum":
-      return { kind: "enum", added: true, index: 0 };
+      return { kind: "boolean", added: true, value: schema.default === true };
+    case "enum": {
+      const index = (schema.enum as unknown[]).findIndex((c) => pyEquals(c, schema.default));
+
+      return { kind: "enum", added: true, index: Math.max(index, 0) };
+    }
     case "array": {
       const items = (schema.items ?? {}) as Schema;
       const count = Number(schema.minItems ?? 0);

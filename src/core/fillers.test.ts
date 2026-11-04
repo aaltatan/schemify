@@ -235,3 +235,13 @@ describe("readList", () => {
     ]);
   });
 });
+
+describe("defaults", () => {
+  test("offers the schema default as the answer", () => {
+    expect(newDraft({ type: "string", default: "Rama" })).toEqual({ kind: "text", text: "Rama" });
+    expect(newDraft({ type: "integer", default: 30 })).toEqual({ kind: "text", text: "30" });
+    expect(newDraft({ type: "boolean", default: true })).toMatchObject({ value: true });
+    expect(newDraft({ enum: ["a", "b"], default: "b" })).toMatchObject({ index: 1 });
+    expect(newDraft({ type: "string" })).toEqual({ kind: "text", text: "" });
+  });
+});

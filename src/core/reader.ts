@@ -182,12 +182,18 @@ function readObject(schema: Schema): ObjectNode {
   const required = Array.isArray(schema.required) ? schema.required : [];
 
   const properties = Object.entries(asSchema(schema.properties ?? {})).map(([name, value]) => {
-    const { title, description, ...rest } = asSchema(value);
+    const { title, description, default: fallback, ...rest } = asSchema(value);
 
     return {
       ...newProperty(name),
       label: asText(title),
       description: asText(description),
+      default:
+        fallback === undefined
+          ? ""
+          : typeof fallback === "string"
+            ? fallback
+            : JSON.stringify(fallback),
       required: required.includes(name),
       node: readNode(rest),
     };

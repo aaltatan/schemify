@@ -150,6 +150,22 @@ describe("containers", () => {
     });
   });
 
+  it("reads defaults as JSON, else as text, matching the property schema", () => {
+    const node = object(
+      property("age", newNode("integer"), { default: "x" }),
+      property("code", newNode("string"), { default: "42" }),
+      property("tags", newNode("array"), { default: '["a"]' }),
+    );
+    const { schema, issues } = run(node);
+
+    expect((schema as { properties: object }).properties).toEqual({
+      age: { type: "integer" },
+      code: { type: "string", default: "42" },
+      tags: { type: "array", items: { type: "string" }, default: ["a"] },
+    });
+    expect(issues).toEqual({ "root.0.default": "'x' is not of type 'integer'" });
+  });
+
   it("needs a property, with unique names", () => {
     expect(run(object()).issues).toEqual({ "root.properties": "Add at least one property" });
     expect(

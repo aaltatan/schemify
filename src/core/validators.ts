@@ -191,6 +191,33 @@ export function toOption(text: string, example: unknown): unknown {
   }
 }
 
+/**
+ * Build a parser for a default value of `schema`, like `default_parser`.
+ *
+ * The answer is read as JSON (`42`, `true`, `["a"]`), else as text, the first matching `schema`
+ * is kept: `42` is a number for an integer and the text `"42"` for a string.
+ */
+export function defaultParser(schema: Schema): Parser {
+  return (text) => {
+    const candidates: unknown[] = [text.trim()];
+
+    try {
+      candidates.unshift(JSON.parse(text));
+    } catch {
+      // not JSON, only the text is tried
+    }
+
+    const errors = candidates.map((candidate) => checkValue(schema, candidate));
+    const index = errors.indexOf(null);
+
+    if (index === -1) {
+      throw new Error(errors[0] ?? "");
+    }
+
+    return candidates[index];
+  };
+}
+
 // -----------------------
 // constraints
 // -----------------------

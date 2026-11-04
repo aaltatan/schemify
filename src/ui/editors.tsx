@@ -467,6 +467,16 @@ function PropertyCard({
             onChange={(e) => onChange({ ...property, description: e.target.value })}
           />
         </Field>
+        {property.node.type !== "computed" && (
+          <Field label={`Default value of '${name}' (optional)`} error={issues[`${path}.default`]}>
+            <input
+              className={`${INPUT} font-mono text-[0.8125rem]`}
+              value={property.default}
+              aria-invalid={Boolean(issues[`${path}.default`])}
+              onChange={(e) => onChange({ ...property, default: e.target.value })}
+            />
+          </Field>
+        )}
       </div>
       <Check
         label={`'${name}' is required`}
