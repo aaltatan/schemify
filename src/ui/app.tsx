@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { type Draft, newDraft, readList } from "../core/fillers.ts";
 import { buildSchema, newProperty, type ObjectNode } from "../core/generators.ts";
 import { readSchema } from "../core/reader.ts";
@@ -22,6 +22,17 @@ const MODES = ["generate", "fill"] as const;
 type Mode = (typeof MODES)[number];
 
 type Workspace = { title: string; root: ObjectNode };
+
+// hash routes (#/generate, #/fill) so a reload or a shared link works on any static host
+function onHashChange(callback: () => void) {
+  addEventListener("hashchange", callback);
+
+  return () => removeEventListener("hashchange", callback);
+}
+
+function currentMode(): Mode {
+  return location.hash === "#/fill" ? "fill" : "generate";
+}
 
 // shortcut: trusts the saved shape, add a version key when Node changes incompatibly
 function savedWorkspace(): Workspace {
@@ -56,7 +67,7 @@ export function App() {
 
   const { schema, issues } = useMemo(() => buildSchema(root, title.trim()), [root, title]);
   // the fill answers are kept for this visit only, one draft per item in list mode
-  const [mode, setMode] = useState<Mode>("generate");
+  const mode = useSyncExternalStore(onHashChange, currentMode);
   const [asList, setAsList] = useState(false);
   const [drafts, setDrafts] = useState<Draft[]>([]);
   const items = drafts.length > 0 ? drafts : [newDraft(schema)];
@@ -118,24 +129,21 @@ export function App() {
             <span className="h-4 w-px bg-rule-strong" aria-hidden="true" />
             <span className="sr-only">, the JSON Schema editor</span>
           </h1>
-          <fieldset className="mr-auto flex rounded-[6px] border border-rule bg-sunken p-0.5">
-            <legend className="sr-only">Command</legend>
+          <nav
+            aria-label="Command"
+            className="mr-auto flex rounded-[6px] border border-rule bg-sunken p-0.5"
+          >
             {MODES.map((name) => (
-              <label
+              <a
                 key={name}
-                className="cursor-pointer rounded-[4px] px-2.5 py-1 font-mono text-[0.8125rem] text-ink-muted transition-colors duration-150 hover:text-ink has-checked:bg-accent-soft has-checked:text-accent has-focus-visible:outline-2 has-focus-visible:outline-accent"
+                href={`#/${name}`}
+                aria-current={mode === name ? "page" : undefined}
+                className="rounded-[4px] px-2.5 py-1 font-mono text-[0.8125rem] text-ink-muted transition-colors duration-150 hover:text-ink focus-visible:outline-2 focus-visible:outline-accent aria-[current=page]:bg-accent-soft aria-[current=page]:text-accent"
               >
-                <input
-                  type="radio"
-                  name="mode"
-                  className="sr-only"
-                  checked={mode === name}
-                  onChange={() => setMode(name)}
-                />
                 {name}
-              </label>
+              </a>
             ))}
-          </fieldset>
+          </nav>
           <ThemeSwitch />
         </div>
       </header>
