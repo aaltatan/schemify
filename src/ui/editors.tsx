@@ -4,7 +4,7 @@
  * Every editor receives its node and path, and reports a changed copy through `onChange`.
  */
 
-import type { ReactNode } from "react";
+import { type ReactNode, useRef } from "react";
 import {
   computer,
   computerGroups,
@@ -268,6 +268,9 @@ function ChoicesEditor({
   issues: Issues;
   onChange: (choices: string[]) => void;
 }) {
+  // set by "Add choice", so the new last input takes the focus once it is rendered
+  const focusAdded = useRef(false);
+
   return (
     <fieldset className="flex flex-col gap-2 text-sm">
       <legend className={LEGEND}>Choices</legend>
@@ -284,6 +287,12 @@ function ChoicesEditor({
               <input
                 className={`${INPUT} font-mono text-[0.8125rem]`}
                 value={choice}
+                ref={(input) => {
+                  if (input && focusAdded.current && index === choices.length - 1) {
+                    focusAdded.current = false;
+                    input.focus();
+                  }
+                }}
                 aria-label={`Choice ${index + 1}`}
                 aria-invalid={Boolean(error)}
                 onChange={(e) => onChange(choices.with(index, e.target.value))}
@@ -310,7 +319,10 @@ function ChoicesEditor({
       <button
         type="button"
         className={`${ADD_BUTTON} ml-7`}
-        onClick={() => onChange([...choices, ""])}
+        onClick={() => {
+          focusAdded.current = true;
+          onChange([...choices, ""]);
+        }}
       >
         <Icon name="plus" />
         Add choice

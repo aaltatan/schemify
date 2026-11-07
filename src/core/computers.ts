@@ -7,21 +7,9 @@
  * same way. Values are JSON, so Python's `int` / `float` difference (`2` vs `2.0`) is lost.
  */
 
-import {
-  toCardinal as arCardinal,
-  toCurrency as arCurrency,
-  toOrdinal as arOrdinal,
-} from "n2words/ar";
-import {
-  toCardinal as enCardinal,
-  toCurrency as enCurrency,
-  toOrdinal as enOrdinal,
-} from "n2words/en";
-import {
-  toCardinal as frCardinal,
-  toCurrency as frCurrency,
-  toOrdinal as frOrdinal,
-} from "n2words/fr";
+import { toCardinal as arCardinal } from "n2words/ar";
+import { toCardinal as enCardinal } from "n2words/en";
+import { toCardinal as frCardinal } from "n2words/fr";
 export const KEYWORD = "x-compute";
 
 import meta from "./meta.json";
@@ -514,6 +502,11 @@ function isoDay(value: unknown): Day {
   return { y, m, d, h: h ?? 0, mi: mi ?? 0, s: s ?? 0 };
 }
 
+/** `isoDay`, computing today's date when there is none, like Python's `_date_or_today`. */
+function dayOrToday(value: unknown): Day {
+  return isoDay(value || localIso(new Date(), false));
+}
+
 function daysIn(year: number, month: number): number {
   return new Date(Date.UTC(year, month, 0)).getUTCDate();
 }
@@ -546,7 +539,7 @@ function localIso(date: Date, time: boolean): string {
 }
 
 function addMonths(value: unknown, months: number): string {
-  const day = isoDay(value);
+  const day = dayOrToday(value);
   const total = day.m - 1 + months;
   const year = day.y + Math.floor(total / 12);
   const month = (((total % 12) + 12) % 12) + 1;
@@ -935,47 +928,16 @@ function arithmetic(op: string, a: unknown, b: unknown): unknown {
 // number to words
 // -----------------------
 
-type Speller = {
-  cardinal: (n: number) => string;
-  ordinal: (n: number) => string;
-  currency: (n: number, currency: string) => string;
-};
-
-/** The languages bundled from n2words, an unknown currency code throws at run time. */
+/** The languages bundled from n2words. */
 // shortcut: en, ar and fr only to keep the bundle small, add a language when someone needs it
-const SPELLERS: Record<string, Speller> = {
-  en: {
-    cardinal: enCardinal,
-    ordinal: enOrdinal,
-    currency: (n, c) => enCurrency(n, { currency: c as never }),
-  },
-  ar: {
-    cardinal: arCardinal,
-    ordinal: arOrdinal,
-    currency: (n, c) => arCurrency(n, { currency: (c === "SR" ? "SAR" : c) as never }),
-  },
-  fr: {
-    cardinal: frCardinal,
-    ordinal: frOrdinal,
-    currency: (n, c) => frCurrency(n, { currency: c as never }),
-  },
+const SPELLERS: Record<string, (n: number) => string> = {
+  en: enCardinal,
+  ar: arCardinal,
+  fr: frCardinal,
 };
 
-/** `words`: n2words wording can differ from `num2words` ("and" vs a comma in currencies). */
-function words({ value, lang = "en", to = "cardinal", currency = null }: Bound): string {
-  if (currency && to !== "currency") {
-    throw new PyError(`The 'currency' option needs "to": "currency", not '${pyStr(to)}'`);
-  }
-
-  // num2words' Arabic falls back to riyal for any other code instead of raising
-  if (
-    to === "currency" &&
-    lang === "ar" &&
-    !["SR", "EGP", "KWD", "TND"].includes(String(currency ?? "SR"))
-  ) {
-    throw new PyError(`Arabic has no '${pyStr(currency)}' currency, only SR, EGP, KWD and TND`);
-  }
-
+/** `words`: the number in `lang`, between the optional `prefix` and `suffix`. */
+function words({ value, lang = "en", prefix = "", suffix = "" }: Bound): string {
   const speller = SPELLERS[String(lang)];
 
   if (!speller) {
@@ -987,35 +949,12 @@ function words({ value, lang = "en", to = "cardinal", currency = null }: Bound):
   const n = num(value);
 
   try {
-    switch (to) {
-      case "cardinal":
-        return speller.cardinal(n);
-      case "ordinal":
-        return speller.ordinal(n);
-      case "ordinal_num":
-        return lang === "en" ? `${n}${enSuffix(n)}` : notInEditor(to);
-      case "currency":
-        return speller.currency(n, String(currency ?? (lang === "ar" ? "SR" : "EUR")));
-      default:
-        return notInEditor(String(to));
-    }
+    return present([prefix, speller(n), suffix])
+      .map(pyStr)
+      .join(" ");
   } catch (e) {
     throw e instanceof PyError ? e : new PyError((e as Error).message);
   }
-}
-
-function enSuffix(n: number): string {
-  const [last, tens] = [n % 10, n % 100];
-
-  if (tens >= 11 && tens <= 13) {
-    return "th";
-  }
-
-  return ["th", "st", "nd", "rd"][last] ?? "th";
-}
-
-function notInEditor(to: string): never {
-  throw new PyError(`'to': '${to}' is not supported in the editor, use the schemify CLI`);
 }
 
 // -----------------------
@@ -1139,37 +1078,38 @@ export const COMPUTERS: Record<string, ComputeFn> = {
   // dates
   today: () => localIso(new Date(), false),
   now: () => localIso(new Date(), true),
-  add_days: ({ value, days }) => {
-    const date = utc(isoDay(value));
+  add_days: ({ value, days = 0 }) => {
+    const date = utc(dayOrToday(value));
 
     date.setUTCDate(date.getUTCDate() + int(days, "days"));
 
     return isoDate(date);
   },
-  add_months: ({ value, months }) => addMonths(value, int(months, "months")),
-  add_years: ({ value, years }) => addMonths(value, int(years, "years") * 12),
+  add_months: ({ value, months = 0 }) => addMonths(value, int(months, "months")),
+  add_years: ({ value, years = 0 }) => addMonths(value, int(years, "years") * 12),
   days_between: ({ start, end }) => {
-    const [a, b] = [isoDay(start), isoDay(end)];
+    const [a, b] = [isoDay(start), dayOrToday(end)];
     const midnight = (day: Day) => utc({ ...day, h: 0, mi: 0, s: 0 }).getTime();
 
     return Math.round((midnight(b) - midnight(a)) / 864e5);
   },
   age: ({ birth_date, on = null }) => {
     const born = isoDay(birth_date);
-    const day = on ? isoDay(on) : isoDay(localIso(new Date(), false));
+    const day = dayOrToday(on);
     const before = day.m < born.m || (day.m === born.m && day.d < born.d);
 
     return day.y - born.y - (before ? 1 : 0);
   },
-  year: ({ value }) => isoDay(value).y,
-  month: ({ value }) => isoDay(value).m,
-  day: ({ value }) => isoDay(value).d,
+  year: ({ value }) => dayOrToday(value).y,
+  month: ({ value }) => dayOrToday(value).m,
+  day: ({ value }) => dayOrToday(value).d,
   weekday: ({ value, fmt = "%A" }) =>
-    strftime({ ...isoDay(value), h: 0, mi: 0, s: 0 }, text(fmt, "fmt")),
-  format_date: ({ value, fmt = "%d/%m/%Y" }) => strftime(isoDay(value), text(fmt, "fmt")),
-  start_of_month: ({ value }) => isoDate(utc({ ...isoDay(value), d: 1 })),
+    strftime({ ...dayOrToday(value), h: 0, mi: 0, s: 0 }, text(fmt, "fmt")),
+  format_date: ({ value, fmt = "%d/%m/%Y" }) =>
+    strftime(isoDay(value || localIso(new Date(), true)), text(fmt, "fmt")),
+  start_of_month: ({ value }) => isoDate(utc({ ...dayOrToday(value), d: 1 })),
   end_of_month: ({ value }) => {
-    const day = isoDay(value);
+    const day = dayOrToday(value);
 
     return isoDate(utc({ ...day, d: daysIn(day.y, day.m) }));
   },

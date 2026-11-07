@@ -138,43 +138,43 @@
       ]
     },
     "add_days": {
-      "signature": "add_days(value: str, days: int) -> str",
-      "summary": "Add (or subtract) days to an ISO date.",
+      "signature": "add_days(value: str | None = None, days: int = 0) -> str",
+      "summary": "Add (or subtract) days to an ISO date (today by default).",
       "examples": [
         {
-          "value": "text",
-          "days": 1
+          "value": null,
+          "days": 0
         },
         {
-          "days": 1
+          "days": 0
         },
         null
       ]
     },
     "add_months": {
-      "signature": "add_months(value: str, months: int) -> str",
-      "summary": "Add months, clamping to the month end: `add_months(\"2026-01-31\", 1) == \"2026-02-28\"`.",
+      "signature": "add_months(value: str | None = None, months: int = 0) -> str",
+      "summary": "Add months to a date (today by default), clamping to the month end.",
       "examples": [
         {
-          "value": "text",
-          "months": 1
+          "value": null,
+          "months": 0
         },
         {
-          "months": 1
+          "months": 0
         },
         null
       ]
     },
     "add_years": {
-      "signature": "add_years(value: str, years: int) -> str",
-      "summary": "Add years, Feb 29 becomes Feb 28 on a non leap year.",
+      "signature": "add_years(value: str | None = None, years: int = 0) -> str",
+      "summary": "Add years to a date (today by default), Feb 29 becomes Feb 28 on a non leap year.",
       "examples": [
         {
-          "value": "text",
-          "years": 1
+          "value": null,
+          "years": 0
         },
         {
-          "years": 1
+          "years": 0
         },
         null
       ]
@@ -262,25 +262,25 @@
       ]
     },
     "day": {
-      "signature": "day(value: str) -> int",
-      "summary": "Return the day of the month of an ISO date.",
+      "signature": "day(value: str | None = None) -> int",
+      "summary": "Return the day of the month of an ISO date (today by default).",
       "examples": [
         {
-          "value": "text"
+          "value": null
         },
         null
       ]
     },
     "days_between": {
-      "signature": "days_between(start: str, end: str) -> int",
-      "summary": "Days from `start` to `end`, negative when `end` is before.",
+      "signature": "days_between(start: str, end: str | None = None) -> int",
+      "summary": "Days from `start` to `end` (today by default), negative when `end` is before.",
       "examples": [
         {
           "start": "text",
-          "end": "text"
+          "end": null
         },
         {
-          "end": "text"
+          "end": null
         },
         null
       ]
@@ -300,11 +300,11 @@
       ]
     },
     "end_of_month": {
-      "signature": "end_of_month(value: str) -> str",
-      "summary": "Return the last day of the month of an ISO date.",
+      "signature": "end_of_month(value: str | None = None) -> str",
+      "summary": "Return the last day of the month of an ISO date (today by default).",
       "examples": [
         {
-          "value": "text"
+          "value": null
         },
         null
       ]
@@ -335,11 +335,11 @@
       ]
     },
     "format_date": {
-      "signature": "format_date(value: str, fmt: str = '%d/%m/%Y') -> str",
-      "summary": "Format an ISO date or datetime with `strftime` codes.",
+      "signature": "format_date(value: str | None = None, fmt: str = '%d/%m/%Y') -> str",
+      "summary": "Format an ISO date or datetime (now by default) with `strftime` codes.",
       "examples": [
         {
-          "value": "text",
+          "value": null,
           "fmt": "%d/%m/%Y"
         },
         {
@@ -472,11 +472,11 @@
       ]
     },
     "month": {
-      "signature": "month(value: str) -> int",
-      "summary": "Return the month (1 to 12) of an ISO date.",
+      "signature": "month(value: str | None = None) -> int",
+      "summary": "Return the month (1 to 12) of an ISO date (today by default).",
       "examples": [
         {
-          "value": "text"
+          "value": null
         },
         null
       ]
@@ -606,11 +606,11 @@
       ]
     },
     "start_of_month": {
-      "signature": "start_of_month(value: str) -> str",
-      "summary": "Return the first day of the month of an ISO date.",
+      "signature": "start_of_month(value: str | None = None) -> str",
+      "summary": "Return the first day of the month of an ISO date (today by default).",
       "examples": [
         {
-          "value": "text"
+          "value": null
         },
         null
       ]
@@ -700,11 +700,11 @@
       ]
     },
     "weekday": {
-      "signature": "weekday(value: str, fmt: str = '%A') -> str",
-      "summary": "Return the weekday name of an ISO date: `Wednesday`.",
+      "signature": "weekday(value: str | None = None, fmt: str = '%A') -> str",
+      "summary": "Return the weekday name of an ISO date (today by default): `Wednesday`.",
       "examples": [
         {
-          "value": "text",
+          "value": null,
           "fmt": "%A"
         },
         {
@@ -714,36 +714,36 @@
       ]
     },
     "words": {
-      "signature": "words(value: Any, lang: str = 'en', to: str = 'cardinal', currency: str | None = None) -> str",
-      "summary": "Spell a number: `words(12) == \"twelve\"`.",
+      "signature": "words(value: Any, lang: str = 'en', prefix: str = '', suffix: str = '') -> str",
+      "summary": "Spell a number: `words(12, prefix=\"only\", suffix=\"USD\") == \"only twelve USD\"`.",
       "examples": [
         {
           "value": "value",
           "lang": "en",
-          "to": "cardinal",
-          "currency": null
+          "prefix": "",
+          "suffix": ""
         },
         {
           "lang": "en",
-          "to": "cardinal",
-          "currency": null
+          "prefix": "",
+          "suffix": ""
         },
         {
-          "to": "cardinal",
-          "currency": null
+          "prefix": "",
+          "suffix": ""
         },
         {
-          "currency": null
+          "suffix": ""
         },
         null
       ]
     },
     "year": {
-      "signature": "year(value: str) -> int",
-      "summary": "Return the year of an ISO date.",
+      "signature": "year(value: str | None = None) -> int",
+      "summary": "Return the year of an ISO date (today by default).",
       "examples": [
         {
-          "value": "text"
+          "value": null
         },
         null
       ]

@@ -64,9 +64,9 @@ describe("computers", () => {
     ["percent_of", [200, 15], {}, 30],
     // words
     ["words", [12], {}, "twelve"],
-    ["words", [2], { to: "ordinal" }, "second"],
-    // n2words says "and" where num2words puts a comma: "one dollar, fifty cents"
-    ["words", [1.5], { to: "currency", currency: "USD" }, "one dollar and fifty cents"],
+    ["words", [12], { suffix: "USD" }, "twelve USD"],
+    ["words", [12], { prefix: "only", suffix: "USD" }, "only twelve USD"],
+    ["words", [1.5], { prefix: "only" }, "only one point five"],
     ["words", [3], { lang: "ar" }, "ثلاثة"],
     // dates
     ["add_days", ["2026-12-31"], { days: 1 }, "2027-01-01"],
@@ -118,6 +118,26 @@ describe("computers", () => {
     );
   });
 
+  test("dates default to today", () => {
+    const iso = call("today", []);
+
+    for (const name of ["add_days", "add_months", "add_years"]) {
+      expect(call(name, [])).toBe(iso);
+      expect(call(name, [null])).toBe(iso);
+    }
+
+    expect(call("add_days", [], { days: 1 })).toBe(call("add_days", [iso], { days: 1 }));
+    expect(call("add_months", [], { months: 1 })).toBe(call("add_months", [iso], { months: 1 }));
+    expect(call("add_years", [], { years: 1 })).toBe(call("add_years", [iso], { years: 1 }));
+    expect(call("days_between", [iso])).toBe(0);
+
+    for (const name of ["year", "month", "day", "weekday", "format_date", "start_of_month"]) {
+      expect(call(name, [])).toEqual(call(name, [iso]));
+    }
+
+    expect(call("end_of_month", [])).toBe(call("end_of_month", [iso]));
+  });
+
   test("template", () => {
     expect(COMPUTERS.template?.({ template: "{n} @ {c}", values: { n: "Rama", c: "Acme" } })).toBe(
       "Rama @ Acme",
@@ -129,8 +149,10 @@ describe("computers", () => {
     ["coalesce", [null, ""], {}],
     ["lookup", ["XX"], { map: {} }],
     ["average", [], {}],
-    ["words", [1], { lang: "ar", currency: "SYP" }],
-    ["words", [1], { lang: "ar", to: "currency", currency: "SYP" }],
+    ["words", [1], { lang: "xx" }],
+    ["words", [1], { to: "ordinal" }],
+    ["days_between", [null], {}],
+    ["age", [null], {}],
   ])("%s(%j, %j) fails", (name, args, options) => {
     expect(() => call(name, args, options)).toThrow(ComputeError);
   });
