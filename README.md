@@ -4,7 +4,7 @@ Build JSON Schemas in the browser, and fill data from them: the web version of t
 [schemify CLI](https://github.com/aaltatan/schemify-cli). Frontend only, no backend.
 
 - Live: [schemify.surge.sh](https://schemify.surge.sh)
-- Source: [github.com/aaltatan/schemify-web](https://github.com/aaltatan/schemify-web)
+- Source: [github.com/aaltatan/schemify](https://github.com/aaltatan/schemify)
 
 - **Generate** mirrors `schemify generate`: every question the CLI asks is a field here, and the
   schema updates as you type. Copy or download it.
