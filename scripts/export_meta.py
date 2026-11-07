@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 
 from schemify.computers import computers, groups
-from schemify.generators import SCHEMA_DIALECT, _options_example, generators
+from schemify.generators import SCHEMA_DIALECT, generators, options_example
 from schemify.validators import ARRAY_CONSTRAINTS, NUMBER_CONSTRAINTS, STRING_CONSTRAINTS
 
 OUTPUT = Path(__file__).resolve().parents[1] / "src" / "core" / "meta.json"
@@ -24,7 +24,7 @@ def _computer(name: str) -> dict[str, object]:
         "summary": (inspect.getdoc(fn) or "").split("\n\n")[0],
         # `examples[n]` is the options example once `n` sources are picked, from Python itself
         # since it reads the parameter annotations and defaults
-        "examples": [_options_example(fn, n) for n in range(len(signature.parameters) + 1)],
+        "examples": [options_example(fn, n) for n in range(len(signature.parameters) + 1)],
     }
 
 
