@@ -408,7 +408,7 @@
       ]
     },
     "lookup": {
-      "signature": "lookup(key: Any, map: dict[str, typing.Any], fallback: Any = <object object at 0x000001A3531C9100>) -> Any",
+      "signature": "lookup(key: Any, map: dict[str, typing.Any], fallback: Any = <no fallback>) -> Any",
       "summary": "Map a value through `map`: `{\"SY\": \"Syria\"}`, keys are compared as strings.",
       "examples": [
         {
