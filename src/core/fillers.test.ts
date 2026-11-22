@@ -171,67 +171,22 @@ describe("readData", () => {
       issues: {},
     });
   });
-
-  test("computed properties are not asked", () => {
-    const schema = {
-      type: "object",
-      properties: {
-        first: { type: "string" },
-        last: { type: "string" },
-        full: {
-          type: "string",
-          minLength: 5,
-          "x-compute": { fn: "join", from: ["first", "last"] },
-        },
-      },
-    };
-
-    expect(Object.keys((newDraft(schema) as { properties: object }).properties)).toEqual([
-      "first",
-      "last",
-    ]);
-    expect(readData(schema, object({ first: text("Rama"), last: text("Ali") })).data).toEqual({
-      first: "Rama",
-      last: "Ali",
-      full: "Rama Ali",
-    });
-
-    // the computed value is checked against its schema too
-    expect(readData(schema, object({ first: text("A"), last: text("B") })).issues[""]).toMatch(
-      /too short/,
-    );
-  });
-
-  test("compute error", () => {
-    const schema = {
-      type: "object",
-      properties: {
-        born: { type: "string" },
-        age: { type: "integer", "x-compute": { fn: "age", from: ["born"] } },
-      },
-    };
-
-    expect(readData(schema, object({ born: text("not a date") })).issues[""]).toMatch(
-      /Can not compute 'age'/,
-    );
-  });
 });
 
 describe("readList", () => {
-  test("items are computed and checked on their own", () => {
+  test("items are checked on their own", () => {
     const schema = {
       type: "object",
       properties: {
         name: { type: "string", minLength: 2 },
-        upper: { type: "string", "x-compute": { fn: "upper", from: ["$.name"] } },
       },
     };
     const drafts = [object({ name: text("Rama") }), object({ name: text("R") })];
 
     expect(readList(schema, drafts).issues).toEqual([{}, { name: "'R' is too short" }]);
     expect(readList(schema, [drafts[0] as Draft, object({ name: text("Ali") })]).data).toEqual([
-      { name: "Rama", upper: "RAMA" },
-      { name: "Ali", upper: "ALI" },
+      { name: "Rama" },
+      { name: "Ali" },
     ]);
   });
 });

@@ -7,17 +7,9 @@
  * an issue keyed by its path (`address.city`, `tags[0]`) and is left out of the data.
  */
 
-import {
-  ComputeError,
-  compute,
-  KEYWORD,
-  NotSupportedError,
-  pyEquals,
-  pyRepr,
-  pyStr,
-} from "./computers.ts";
 import type { Issues } from "./generators.ts";
 import type { Schema } from "./models.ts";
+import { pyEquals, pyRepr, pyStr } from "./python.ts";
 import { checkValue, type Parser, toDate, toDatetime, toInt, toNumber } from "./validators.ts";
 
 /** The answers for one value, `added` is whether an optional value is given. */
@@ -105,9 +97,7 @@ export function newDraft(schema: Schema): Draft {
         kind: "object",
         added: true,
         properties: Object.fromEntries(
-          Object.entries(properties(schema))
-            .filter(([, property]) => !(KEYWORD in property))
-            .map(([key, property]) => [key, newDraft(property)]),
+          Object.entries(properties(schema)).map(([key, property]) => [key, newDraft(property)]),
         ),
       };
     default:
@@ -115,23 +105,13 @@ export function newDraft(schema: Schema): Draft {
   }
 }
 
-/** The data `draft` gives for `schema`, computed then checked as a whole, like `ask_data`. */
+/** The data `draft` gives for `schema`, checked as a whole, like `ask_data`. */
 export function readData(schema: Schema, draft: Draft): { data: unknown; issues: Issues } {
   const issues: Issues = {};
   const value = fill(schema, draft, "", true, issues);
   const data = value === MISSING ? {} : value;
 
-  try {
-    compute(schema, data);
-  } catch (e) {
-    if (!(e instanceof ComputeError || e instanceof NotSupportedError)) {
-      throw e;
-    }
-
-    issues[""] = e.message;
-  }
-
-  // the keywords no filler asks about (like `allOf` or `dependentRequired`), and computed values
+  // the keywords no filler asks about (like `allOf` or `dependentRequired`)
   const error = Object.keys(issues).length === 0 ? checkValue(schema, data) : null;
 
   if (error !== null) {
@@ -141,7 +121,7 @@ export function readData(schema: Schema, draft: Draft): { data: unknown; issues:
   return { data, issues };
 }
 
-/** Items each matching `schema`, each computed and checked on its own, like `ask_list`. */
+/** Items each matching `schema`, each checked on its own, like `ask_list`. */
 export function readList(schema: Schema, drafts: Draft[]): { data: unknown[]; issues: Issues[] } {
   const items = drafts.map((draft) => readData(schema, draft));
 
@@ -305,10 +285,6 @@ function fillObject(
   const data: Record<string, unknown> = {};
 
   for (const [name, propertySchema] of Object.entries(properties(schema))) {
-    if (KEYWORD in propertySchema) {
-      continue;
-    }
-
     const path = label ? `${label}.${name}` : name;
     const value = fill(
       propertySchema,

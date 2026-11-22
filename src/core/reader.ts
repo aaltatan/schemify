@@ -7,7 +7,6 @@
 
 import {
   buildSchema,
-  KEYWORD,
   type Node,
   newNode,
   newProperty,
@@ -90,24 +89,6 @@ function answers(schema: Schema, keywords: { keyword: string }[]): Record<string
 }
 
 function readNode(schema: Schema): Node {
-  if (KEYWORD in schema) {
-    const { [KEYWORD]: spec, ...result } = schema;
-    const { fn, from, options } = asSchema(spec);
-
-    return {
-      type: "computed",
-      fn: asText(fn),
-      from: Array.isArray(from) ? from.map(String) : [],
-      options: Object.fromEntries(
-        Object.entries(options ? asSchema(options) : {}).map(([name, value]) => [
-          name,
-          typeof value === "string" ? value : JSON.stringify(value),
-        ]),
-      ),
-      result: readNode(result),
-    };
-  }
-
   switch (schema.type) {
     case "string":
       return readString(schema);

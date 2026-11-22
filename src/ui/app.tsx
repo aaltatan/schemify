@@ -190,7 +190,6 @@ export function App() {
                   <FillForm
                     schema={schema}
                     draft={draft}
-                    data={filled.data[index]}
                     issues={filled.issues[index] ?? {}}
                     onChange={(changed) => setItem(index, changed)}
                   />

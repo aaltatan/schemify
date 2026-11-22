@@ -3,15 +3,12 @@
 import { describe, expect, it } from "vitest";
 import {
   buildSchema,
-  computerGroups,
   generate,
   type Issues,
-  KEYWORD,
   type Node,
   newNode,
   newProperty,
   type ObjectNode,
-  optionsExample,
   type Property,
   SCHEMA_DIALECT,
   TYPES,
@@ -175,75 +172,6 @@ describe("containers", () => {
     });
   });
 
-  it("builds a computed property", () => {
-    const full: Node = {
-      type: "computed",
-      fn: "join",
-      from: ["first", "last"],
-      options: { sep: ", " },
-      result: newNode("string"),
-    };
-    const node = object(
-      property("first", newNode("string")),
-      property("last", newNode("string")),
-      property("full", full, { label: "Full name" }),
-    );
-
-    expect((run(node).schema as { properties: object }).properties).toMatchObject({
-      full: {
-        title: "Full name",
-        type: "string",
-        [KEYWORD]: { fn: "join", from: ["first", "last"], options: { sep: ", " } },
-      },
-    });
-  });
-
-  it("drops options of a computer without any", () => {
-    const loud: Node = {
-      type: "computed",
-      fn: "upper",
-      from: ["name"],
-      options: { sep: "-" },
-      result: newNode("string"),
-    };
-    const schema = run(object(property("name", newNode("string")), property("loud", loud))).schema;
-
-    expect((schema as { properties: Record<string, object> }).properties.loud).toEqual({
-      type: "string",
-      [KEYWORD]: { fn: "upper", from: ["name"] },
-    });
-  });
-
-  it("computes only from earlier properties", () => {
-    const first: Node = {
-      type: "computed",
-      fn: "upper",
-      from: [],
-      options: {},
-      result: newNode("string"),
-    };
-    const later: Node = {
-      type: "computed",
-      fn: "upper",
-      from: ["b"],
-      options: {},
-      result: newNode("string"),
-    };
-
-    expect(run(object(property("a", first))).issues).toHaveProperty("root.0.type");
-    expect(
-      run(
-        object(
-          property("a", newNode("string")),
-          property("c", later),
-          property("b", newNode("string")),
-        ),
-      ).issues,
-    ).toEqual({
-      "root.1.from": "Not an earlier property: b",
-    });
-  });
-
   it("builds the schema with its header", () => {
     expect(buildSchema(object(property("done", newNode("boolean"))), "Task").schema).toEqual({
       $schema: SCHEMA_DIALECT,
@@ -256,32 +184,9 @@ describe("containers", () => {
   });
 });
 
-describe("computers", () => {
-  it("groups them in order, Text first", () => {
-    expect(computerGroups()[0]?.[0]).toBe("Text");
-  });
-
-  it.each([
-    ["join", 2, { sep: " " }],
-    ["upper", 1, null],
-    ["upper", 0, { value: "value" }],
-    ["replace", 1, { old: "text", new: "text" }],
-    ["round", 1, { digits: 2 }],
-    ["words", 1, { lang: "en", prefix: "", suffix: "" }],
-    ["lookup", 1, { map: {}, fallback: "value" }],
-    ["expr", 0, { expr: "text" }],
-    ["template", 1, {}],
-    ["today", 0, null],
-    ["join", 9, { sep: " " }],
-  ])("gives the options example of %s with %i sources", (name, sources, expected) => {
-    expect(optionsExample(name, sources)).toEqual(expected);
-  });
-});
-
 describe("defaults", () => {
-  it("lists types sorted and picks the first computer listed", () => {
+  it("lists types sorted", () => {
     expect(TYPES[0]).toBe("array");
-    expect(newNode("computed")).toMatchObject({ fn: "join" });
   });
 });
 

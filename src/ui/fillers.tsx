@@ -2,13 +2,12 @@
  * The fill form, asking what `schemify fill` asks: one input per value, by schema kind.
  *
  * Every input receives its draft and path, and reports a changed copy through `onChange`.
- * `data` is the computed data at that path, to show the computed properties.
  */
 
-import { KEYWORD, pyStr } from "../core/computers.ts";
 import { type Draft, displayName, draftFor, kind, newDraft, properties } from "../core/fillers.ts";
 import type { Issues } from "../core/generators.ts";
 import type { Schema } from "../core/models.ts";
+import { pyStr } from "../core/python.ts";
 import {
   ADD_BUTTON,
   Check,
@@ -25,7 +24,6 @@ type ValueProps = {
   draft: Draft;
   label: string;
   required: boolean;
-  data: unknown;
   issues: Issues;
   onChange: (draft: Draft) => void;
 };
@@ -36,17 +34,10 @@ const PLACEHOLDERS: Record<string, string> = {
   "date-time": "2026-11-04T10:30:00+03:00",
 };
 
-function at(data: unknown, key: string | number): unknown {
-  return typeof data === "object" && data !== null
-    ? (data as Record<string | number, unknown>)[key]
-    : undefined;
-}
-
 /** The questions of a root object schema, like `ask_data`. */
 export function FillForm({
   schema,
   draft,
-  data,
   issues,
   onChange,
 }: Omit<ValueProps, "label" | "required">) {
@@ -64,7 +55,6 @@ export function FillForm({
           schema={schema}
           draft={current}
           label=""
-          data={data}
           issues={issues}
           onChange={onChange}
         />
@@ -74,7 +64,6 @@ export function FillForm({
           draft={current}
           label=""
           required
-          data={data}
           issues={issues}
           onChange={onChange}
         />
@@ -87,7 +76,6 @@ function ObjectFields({
   schema,
   draft,
   label,
-  data,
   issues,
   onChange,
 }: Omit<ValueProps, "required" | "draft"> & { draft: Extract<Draft, { kind: "object" }> }) {
@@ -98,12 +86,6 @@ function ObjectFields({
       {Object.entries(properties(schema)).map(([name, propertySchema]) => {
         const path = label ? `${label}.${name}` : name;
 
-        if (KEYWORD in propertySchema) {
-          return (
-            <Computed key={name} name={displayName(propertySchema, path)} value={at(data, name)} />
-          );
-        }
-
         return (
           <ValueInput
             key={name}
@@ -111,7 +93,6 @@ function ObjectFields({
             draft={draftFor(propertySchema, draft.properties[name])}
             label={path}
             required={required.has(name)}
-            data={at(data, name)}
             issues={issues}
             onChange={(changed) =>
               onChange({ ...draft, properties: { ...draft.properties, [name]: changed } })
@@ -119,17 +100,6 @@ function ObjectFields({
           />
         );
       })}
-    </div>
-  );
-}
-
-function Computed({ name, value }: { name: string; value: unknown }) {
-  return (
-    <div className="flex flex-col gap-1.5 text-sm">
-      <span className="text-[0.8125rem] text-ink-muted">{name} (computed)</span>
-      <output className="min-h-9 rounded-[5px] border border-dashed border-rule-strong px-2.5 py-2 font-mono text-[0.8125rem] break-all">
-        {value === undefined ? "—" : JSON.stringify(value)}
-      </output>
     </div>
   );
 }
@@ -182,7 +152,7 @@ function ValueInput(props: ValueProps) {
 }
 
 function Choice({ name, ...props }: ValueProps & { name: string }) {
-  const { schema, draft, label, data, issues, onChange } = props;
+  const { schema, draft, label, issues, onChange } = props;
 
   switch (draft.kind) {
     case "boolean":
@@ -225,7 +195,6 @@ function Choice({ name, ...props }: ValueProps & { name: string }) {
                     draft={draftFor(itemsSchema, item)}
                     label={`${label}[${i}]`}
                     required
-                    data={at(data, i)}
                     issues={issues}
                     onChange={(changed) =>
                       onChange({ ...draft, items: draft.items.with(i, changed) })
@@ -267,7 +236,6 @@ function Choice({ name, ...props }: ValueProps & { name: string }) {
               schema={schema}
               draft={draft}
               label={label}
-              data={data}
               issues={issues}
               onChange={onChange}
             />

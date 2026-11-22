@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildSchema, KEYWORD, SCHEMA_DIALECT } from "./generators.ts";
+import { buildSchema, SCHEMA_DIALECT } from "./generators.ts";
 import { readSchema } from "./reader.ts";
 
 const SCHEMA = {
@@ -19,7 +19,6 @@ const SCHEMA = {
       properties: { city: { type: "string" } },
       required: ["city"],
     },
-    shout: { type: "string", [KEYWORD]: { fn: "upper", from: ["name"] } },
   },
   required: ["name", "age"],
   additionalProperties: false,
@@ -37,7 +36,6 @@ describe("readSchema", () => {
       false,
       false,
       true,
-      false,
       false,
       false,
       false,

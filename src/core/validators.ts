@@ -6,9 +6,9 @@
 
 import Ajv2020, { type ErrorObject, type ValidateFunction } from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
-import { pyRepr } from "./computers.ts";
 import meta from "./meta.json";
 import type { Schema } from "./models.ts";
+import { pyRepr } from "./python.ts";
 
 export type Parser = (text: string) => unknown;
 
@@ -164,31 +164,6 @@ function localOffset(naive: string): string {
   const two = (n: number) => String(Math.floor(n)).padStart(2, "0");
 
   return `${minutes >= 0 ? "+" : "-"}${two(Math.abs(minutes) / 60)}:${two(Math.abs(minutes) % 60)}`;
-}
-
-/**
- * Parse one computer option typed in its own input, typed by its example value:
- * a string or `null` example keeps the text, a number, boolean, list or object one parses JSON,
- * and Python's `"value"` placeholder (an `Any` parameter) parses JSON, else keeps the text.
- */
-export function toOption(text: string, example: unknown): unknown {
-  if (example === "value") {
-    try {
-      return JSON.parse(text);
-    } catch {
-      return text;
-    }
-  }
-
-  if (typeof example === "string" || example === null) {
-    return text;
-  }
-
-  try {
-    return JSON.parse(text);
-  } catch (e) {
-    throw new Error(`Invalid JSON: ${(e as Error).message}`);
-  }
 }
 
 /**

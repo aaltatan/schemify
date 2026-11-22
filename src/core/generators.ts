@@ -6,7 +6,6 @@
  * again, becomes an issue keyed by its path and is left out of the schema.
  */
 
-import { KEYWORD } from "./computers.ts";
 import meta from "./meta.json";
 import type { Schema } from "./models.ts";
 import {
@@ -16,12 +15,9 @@ import {
   defaultParser,
   NUMBER_CONSTRAINTS,
   STRING_CONSTRAINTS,
-  toOption,
 } from "./validators.ts";
 
 export const SCHEMA_DIALECT = meta.dialect;
-
-export { KEYWORD };
 
 export const STRING_FORMATS = ["none", "email", "uuid"] as const;
 
@@ -40,20 +36,9 @@ export type Node =
   | { type: "boolean" | "date" | "datetime" }
   | { type: "enum"; choices: string[] }
   | { type: "array"; items: Node; validators: boolean; constraints: Answers; uniqueItems: boolean }
-  | ObjectNode
-  | ComputedNode;
+  | ObjectNode;
 
 export type ObjectNode = { type: "object"; properties: Property[]; extraProperties: boolean };
-
-/** `from` holds the source names in the order they were picked. */
-export type ComputedNode = {
-  type: "computed";
-  fn: string;
-  from: string[];
-  /** The typed option values by name, an empty one is left out. */
-  options: Record<string, string>;
-  result: Node;
-};
 
 export type Property = {
   id: string;
@@ -94,19 +79,10 @@ const FACTORIES: Record<TypeName, () => Node> = {
     uniqueItems: false,
   }),
   object: () => ({ type: "object", properties: [], extraProperties: false }),
-  computed: () => ({
-    type: "computed",
-    fn: computerGroups()[0]?.[1][0] ?? "", // the first one listed, like the prompt
-    from: [],
-    options: {},
-    result: newNode("string"),
-  }),
 };
 
-/** The type names Python offers, `computed` is only offered after an earlier property. */
-export const TYPES = (Object.keys(FACTORIES) as TypeName[])
-  .filter((name) => name !== "computed")
-  .sort();
+/** The type names Python offers. */
+export const TYPES = (Object.keys(FACTORIES) as TypeName[]).sort();
 
 export function newNode(type: TypeName): Node {
   return FACTORIES[type]();
@@ -161,9 +137,6 @@ export function generate(node: Node, path: string, issues: Issues): Schema {
 
     case "object":
       return generateObject(node, path, issues);
-
-    case "computed":
-      return generateComputed(node, [], path, issues);
   }
 }
 
@@ -306,10 +279,7 @@ function generateObject(node: ObjectNode, path: string, issues: Issues): Schema 
     const propertyPath = `${path}.${index}`;
 
     // checked before the name, so a property with a bad name still shows its other issues
-    const propertySchema =
-      property.node.type === "computed"
-        ? generateComputed(property.node, Object.keys(properties), propertyPath, issues)
-        : generate(property.node, propertyPath, issues);
+    const propertySchema = generate(property.node, propertyPath, issues);
 
     if (!name) {
       issues[`${propertyPath}.name`] = "Enter a property name";
@@ -323,15 +293,13 @@ function generateObject(node: ObjectNode, path: string, issues: Issues): Schema 
 
     const annotations = { title: property.label.trim(), description: property.description.trim() };
 
-    // a computed property sets its own `default` in `x-compute`
-    const fallback =
-      property.node.type !== "computed" && property.default.trim()
-        ? parse(
-            () => ({ default: defaultParser(propertySchema)(property.default) }),
-            `${propertyPath}.default`,
-            issues,
-          )
-        : {};
+    const fallback = property.default.trim()
+      ? parse(
+          () => ({ default: defaultParser(propertySchema)(property.default) }),
+          `${propertyPath}.default`,
+          issues,
+        )
+      : {};
 
     properties[name] = {
       ...Object.fromEntries(Object.entries(annotations).filter(([, value]) => value)),
@@ -355,83 +323,4 @@ function generateObject(node: ObjectNode, path: string, issues: Issues): Schema 
   }
 
   return schema;
-}
-
-// -----------------------
-// computed
-// -----------------------
-
-type Computer = (typeof meta.computers)[keyof typeof meta.computers];
-
-export function computerNames(): string[] {
-  return Object.keys(meta.computers).sort();
-}
-
-export function computer(name: string): Computer | undefined {
-  return (meta.computers as Record<string, Computer>)[name];
-}
-
-/** The computers under each group in order, the ungrouped ones last under "Other". */
-export function computerGroups(): [group: string, names: string[]][] {
-  const grouped = new Set(Object.values(meta.groups).flat());
-  const other = computerNames().filter((name) => !grouped.has(name));
-
-  return Object.entries({ ...meta.groups, Other: other }).filter(([, names]) => names.length > 0);
-}
-
-/** Example options of `fn` once `sources` values fill its first parameters, `null` when none. */
-export function optionsExample(fn: string, sources: number): Record<string, unknown> | null {
-  const examples = computer(fn)?.examples ?? [];
-
-  return (
-    (examples[Math.min(sources, examples.length - 1)] as Record<string, unknown> | null) ?? null
-  );
-}
-
-/** A property computed from the earlier properties `names`, and the type of its result. */
-function generateComputed(
-  node: ComputedNode,
-  names: string[],
-  path: string,
-  issues: Issues,
-): Schema {
-  if (names.length === 0) {
-    issues[`${path}.type`] = "A computed property needs an earlier property to compute from";
-  }
-
-  if (!computer(node.fn)) {
-    issues[`${path}.fn`] =
-      `Computer '${node.fn}' is not supported, supported: ${computerNames().join(", ")}`;
-  }
-
-  const missing = node.from.filter((source) => !names.includes(source));
-
-  if (missing.length > 0) {
-    issues[`${path}.from`] = `Not an earlier property: ${missing.join(", ")}`;
-  }
-
-  const spec: Schema = { fn: node.fn };
-
-  if (node.from.length > 0) {
-    spec.from = node.from;
-  }
-
-  const options: Schema = {};
-
-  for (const [name, example] of Object.entries(optionsExample(node.fn, node.from.length) ?? {})) {
-    const text = node.options[name] ?? "";
-
-    if (text !== "") {
-      Object.assign(
-        options,
-        parse(() => ({ [name]: toOption(text, example) }), `${path}.options.${name}`, issues),
-      );
-    }
-  }
-
-  if (Object.keys(options).length > 0) {
-    spec.options = options;
-  }
-
-  return { ...generate(node.result, `${path}.result`, issues), [KEYWORD]: spec };
 }

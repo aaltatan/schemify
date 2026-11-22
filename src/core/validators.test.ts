@@ -8,7 +8,6 @@ import {
   toDatetime,
   toInt,
   toNumber,
-  toOption,
   toRegex,
 } from "./validators.ts";
 
@@ -27,14 +26,8 @@ describe("parsers", () => {
     expect(() => toNumber(".")).toThrow();
   });
 
-  it("checks regexes and options", () => {
+  it("checks regexes", () => {
     expect(() => toRegex("(")).toThrow("Invalid regular expression");
-    expect(toOption("1", " ")).toBe("1");
-    expect(toOption("2", 4)).toBe(2);
-    expect(toOption('{"a": 1}', {})).toEqual({ a: 1 });
-    expect(() => toOption("x", 4)).toThrow("Invalid JSON");
-    expect(toOption("2", "value")).toBe(2);
-    expect(toOption("abc", "value")).toBe("abc");
   });
 
   it("checks bounds", () => {
@@ -72,6 +65,5 @@ describe("checkValue", () => {
     expect(checkValue({ type: "object", properties: { a: { type: "integer" } } }, { a: "x" })).toBe(
       "'x' is not of type 'integer'",
     );
-    expect(checkValue({ type: "string", "x-compute": { fn: "upper" } }, "A")).toBeNull();
   });
 });
