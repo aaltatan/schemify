@@ -1,8 +1,10 @@
 // The cases of schemify's tests/test_generators.py, as nodes instead of scripted answers.
 
+import Ajv2020 from "ajv/dist/2020.js";
 import { describe, expect, it } from "vitest";
 import {
   buildSchema,
+  FORMAT_PATTERNS,
   generate,
   type Issues,
   type Node,
@@ -28,6 +30,31 @@ function object(...properties: Property[]): ObjectNode {
   return { type: "object", properties, extraProperties: false };
 }
 
+describe("format patterns", () => {
+  // without ajv-formats, like most validators by default, the pattern still checks
+  const ajv = new Ajv2020();
+
+  it.each([
+    ["date", ["2026-11-04"], ["2026-13-01", "2026-1-01", "hello"]],
+    [
+      "date-time",
+      ["2026-11-04T10:30:00.123456+03:00", "2026-11-04T10:30:00+00:00", "2026-11-04T10:30:00Z"],
+      ["2026-11-04 10:30:00Z", "2026-11-04T10:30:00", "2026-11-04T25:00:00Z", "hello"],
+    ],
+    ["email", ["a@b.co"], ["nope", "a@b", "a b@c.d"]],
+    [
+      "uuid",
+      ["123e4567-e89b-12d3-a456-426614174000"],
+      ["123e4567e89b12d3a456426614174000", "hello"],
+    ],
+  ])("checks %s", (format, valid, invalid) => {
+    const validate = ajv.compile({ type: "string", pattern: FORMAT_PATTERNS[format] });
+
+    expect(valid.every((value) => validate(value))).toBe(true);
+    expect(invalid.some((value) => validate(value))).toBe(false);
+  });
+});
+
 describe("primitives", () => {
   it("has no validators by default", () => {
     expect(run(newNode("string")).schema).toEqual({ type: "string" });
@@ -37,14 +64,26 @@ describe("primitives", () => {
 
   it("asks no questions", () => {
     expect(run(newNode("boolean")).schema).toEqual({ type: "boolean" });
-    expect(run(newNode("date")).schema).toEqual({ type: "string", format: "date" });
-    expect(run(newNode("datetime")).schema).toEqual({ type: "string", format: "date-time" });
+    expect(run(newNode("date")).schema).toEqual({
+      type: "string",
+      format: "date",
+      pattern: FORMAT_PATTERNS.date,
+    });
+    expect(run(newNode("datetime")).schema).toEqual({
+      type: "string",
+      format: "date-time",
+      pattern: FORMAT_PATTERNS["date-time"],
+    });
   });
 
   it("returns a string format alone", () => {
     const node: Node = { ...newNode("string"), validators: true, format: "email" } as Node;
 
-    expect(run(node).schema).toEqual({ type: "string", format: "email" });
+    expect(run(node).schema).toEqual({
+      type: "string",
+      format: "email",
+      pattern: FORMAT_PATTERNS.email,
+    });
   });
 
   it("parses string validators and rejects a bad one", () => {
@@ -68,7 +107,7 @@ describe("primitives", () => {
 
     expect(run(node as Node).schema).toEqual({
       type: "string",
-      pattern: String.raw`^\d+$`,
+      pattern: "^[0-9]+$",
       maxLength: 5,
     });
   });

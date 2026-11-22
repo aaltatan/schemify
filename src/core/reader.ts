@@ -7,6 +7,8 @@
 
 import {
   buildSchema,
+  DIGITS_ONLY,
+  FORMAT_PATTERNS,
   type Node,
   newNode,
   newProperty,
@@ -16,7 +18,8 @@ import {
 import type { Schema } from "./models.ts";
 import { ARRAY_CONSTRAINTS, NUMBER_CONSTRAINTS, STRING_CONSTRAINTS } from "./validators.ts";
 
-const DIGITS_ONLY = String.raw`^\d+$`;
+/** What digits only was before `[0-9]`, `\d` also matches other digits in Python and .NET. */
+const OLD_DIGITS_ONLY = String.raw`^\d+$`;
 
 /** The root object and title of the schema in `text`, or throws an `Error` saying why not. */
 export function readSchema(text: string): { root: ObjectNode; title: string } {
@@ -143,7 +146,7 @@ function readString(schema: Schema): Node {
     return { ...newNode("string"), validators: true, format } as Node;
   }
 
-  const digitsOnly = schema.pattern === DIGITS_ONLY;
+  const digitsOnly = schema.pattern === DIGITS_ONLY || schema.pattern === OLD_DIGITS_ONLY;
   const constraints = answers(schema, STRING_CONSTRAINTS);
 
   if (digitsOnly) {
@@ -196,6 +199,10 @@ function difference(a: unknown, b: unknown, path: string): string | null {
   const [x, y] = [a as Record<string, unknown>, b as Record<string, unknown>];
 
   for (const key of new Set([...Object.keys(x), ...Object.keys(y)])) {
+    if (key === "pattern" && olderPattern(x, y)) {
+      continue;
+    }
+
     const sorted = key === "required" && Array.isArray(x[key]) && Array.isArray(y[key]);
     const [left, right] = sorted
       ? [[...(x[key] as string[])].sort(), [...(y[key] as string[])].sort()]
@@ -208,4 +215,15 @@ function difference(a: unknown, b: unknown, path: string): string | null {
   }
 
   return null;
+}
+
+/** A pattern older schemas lack or write differently, so they still load and get the new one. */
+function olderPattern(
+  original: Record<string, unknown>,
+  rebuilt: Record<string, unknown>,
+): boolean {
+  const added =
+    original.pattern === undefined && rebuilt.pattern === FORMAT_PATTERNS[rebuilt.format as string];
+
+  return added || (original.pattern === OLD_DIGITS_ONLY && rebuilt.pattern === DIGITS_ONLY);
 }

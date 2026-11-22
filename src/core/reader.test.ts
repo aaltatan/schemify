@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildSchema, SCHEMA_DIALECT } from "./generators.ts";
+import { buildSchema, FORMAT_PATTERNS, SCHEMA_DIALECT } from "./generators.ts";
 import { readSchema } from "./reader.ts";
 
 const SCHEMA = {
@@ -8,10 +8,15 @@ const SCHEMA = {
   type: "object",
   properties: {
     name: { title: "Full name", type: "string", minLength: 1, not: { enum: ["root", "admin"] } },
-    code: { type: "string", pattern: String.raw`^\d+$`, maxLength: 6 },
-    email: { type: "string", format: "email", default: "a@b.c" },
+    code: { type: "string", pattern: "^[0-9]+$", maxLength: 6 },
+    email: { type: "string", format: "email", pattern: FORMAT_PATTERNS.email, default: "a@b.c" },
     age: { type: "integer", minimum: 0, maximum: 150, default: 30 },
-    born: { description: "Day of birth", type: "string", format: "date" },
+    born: {
+      description: "Day of birth",
+      type: "string",
+      format: "date",
+      pattern: FORMAT_PATTERNS.date,
+    },
     color: { type: "string", enum: ["red", "green"] },
     tags: { type: "array", items: { type: "string" }, maxItems: 3, uniqueItems: true },
     address: {
@@ -42,6 +47,23 @@ describe("readSchema", () => {
       false,
     ]);
     expect(schema).toEqual(SCHEMA);
+  });
+
+  it("reads an older schema without format patterns and adds them", () => {
+    const older = {
+      ...SCHEMA,
+      properties: {
+        code: { type: "string", pattern: String.raw`^\d+$` },
+        born: { type: "string", format: "date" },
+      },
+      required: ["code"],
+    };
+    const { root, title } = readSchema(JSON.stringify(older));
+
+    expect(buildSchema(root, title).schema.properties).toEqual({
+      code: { type: "string", pattern: "^[0-9]+$" },
+      born: { type: "string", format: "date", pattern: FORMAT_PATTERNS.date },
+    });
   });
 
   it("rejects what the editor cannot hold", () => {

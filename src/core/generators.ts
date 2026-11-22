@@ -21,6 +21,27 @@ export const SCHEMA_DIALECT = meta.dialect;
 
 export const STRING_FORMATS = ["none", "email", "uuid"] as const;
 
+const DATE = "[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])";
+
+/**
+ * `format` is only an annotation in 2020-12, most validators skip it unless told to check
+ * formats, but every one checks `pattern`: ASCII classes, no lookaround, so it reads the same
+ * in JS, Python, Go (RE2), Rust, Java and .NET.
+ */
+// shortcut: dates are not checked against the calendar (02-31 passes), format checking does that
+export const FORMAT_PATTERNS: Record<string, string> = {
+  date: `^${DATE}$`,
+  "date-time": String.raw`^${DATE}[Tt]([01][0-9]|2[0-3]):[0-5][0-9]:([0-5][0-9]|60)(\.[0-9]+)?([Zz]|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$`,
+  email: String.raw`^[^@\s]+@[^@\s]+\.[^@\s]+$`,
+  uuid: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+};
+
+export const DIGITS_ONLY = "^[0-9]+$";
+
+function formatted(format: string): Schema {
+  return { type: "string", format, pattern: FORMAT_PATTERNS[format] };
+}
+
 /** Answers to constraint questions by keyword, an empty answer skips it. */
 export type Answers = Record<string, string>;
 
@@ -124,10 +145,10 @@ export function generate(node: Node, path: string, issues: Issues): Schema {
       return { type: "boolean" };
 
     case "date":
-      return { type: "string", format: "date" };
+      return formatted("date");
 
     case "datetime":
-      return { type: "string", format: "date-time" };
+      return formatted("date-time");
 
     case "enum":
       return generateEnum(node.choices, path, issues);
@@ -228,13 +249,13 @@ function generateString(
   }
 
   if (node.format !== "none") {
-    return { ...schema, format: node.format };
+    return formatted(node.format);
   }
 
   let constraints = STRING_CONSTRAINTS;
 
   if (node.digitsOnly) {
-    schema.pattern = String.raw`^\d+$`;
+    schema.pattern = DIGITS_ONLY;
     constraints = STRING_CONSTRAINTS.filter((c) => c.keyword !== "pattern");
   }
 
