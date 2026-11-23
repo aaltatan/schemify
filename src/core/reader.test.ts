@@ -18,6 +18,7 @@ const SCHEMA = {
       pattern: FORMAT_PATTERNS.date,
     },
     color: { type: "string", enum: ["red", "green"] },
+    level: { type: "integer", enum: [1, 2] },
     tags: { type: "array", items: { type: "string" }, maxItems: 3, uniqueItems: true },
     address: {
       type: "object",
@@ -41,6 +42,7 @@ describe("readSchema", () => {
       false,
       false,
       true,
+      false,
       false,
       false,
       false,

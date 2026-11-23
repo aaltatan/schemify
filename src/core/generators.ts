@@ -15,11 +15,13 @@ import {
   defaultParser,
   NUMBER_CONSTRAINTS,
   STRING_CONSTRAINTS,
+  toInt,
+  toNumber,
 } from "./validators.ts";
 
 export const SCHEMA_DIALECT = meta.dialect;
 
-export const STRING_FORMATS = ["none", "email", "uuid"] as const;
+export const STRING_FORMATS = ["none", "date", "date-time", "email", "uuid"] as const;
 
 const DATE = "[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])";
 
@@ -45,17 +47,19 @@ function formatted(format: string): Schema {
 /** Answers to constraint questions by keyword, an empty answer skips it. */
 export type Answers = Record<string, string>;
 
+/** Choices replace the other validators of a string or number, like Python skips them. */
+type Choices = { limitChoices: boolean; choices: string[] };
+
 export type Node =
-  | {
+  | ({
       type: "string";
-      validators: boolean;
       format: (typeof STRING_FORMATS)[number];
+      validators: boolean;
       digitsOnly: boolean;
       constraints: Answers;
-    }
-  | { type: "integer" | "number"; validators: boolean; constraints: Answers }
-  | { type: "boolean" | "date" | "datetime" }
-  | { type: "enum"; choices: string[] }
+    } & Choices)
+  | ({ type: "integer" | "number"; validators: boolean; constraints: Answers } & Choices)
+  | { type: "boolean" }
   | { type: "array"; items: Node; validators: boolean; constraints: Answers; uniqueItems: boolean }
   | ObjectNode;
 
@@ -81,17 +85,28 @@ export type Issues = Record<string, string>;
 const FACTORIES: Record<TypeName, () => Node> = {
   string: () => ({
     type: "string",
-    validators: false,
     format: "none",
+    validators: false,
+    limitChoices: false,
+    choices: [""],
     digitsOnly: false,
     constraints: {},
   }),
-  integer: () => ({ type: "integer", validators: false, constraints: {} }),
-  number: () => ({ type: "number", validators: false, constraints: {} }),
+  integer: () => ({
+    type: "integer",
+    validators: false,
+    limitChoices: false,
+    choices: [""],
+    constraints: {},
+  }),
+  number: () => ({
+    type: "number",
+    validators: false,
+    limitChoices: false,
+    choices: [""],
+    constraints: {},
+  }),
   boolean: () => ({ type: "boolean" }),
-  date: () => ({ type: "date" }),
-  datetime: () => ({ type: "datetime" }),
-  enum: () => ({ type: "enum", choices: [""] }),
   array: () => ({
     type: "array",
     items: newNode("string"),
@@ -137,21 +152,23 @@ export function generate(node: Node, path: string, issues: Issues): Schema {
 
     case "integer":
     case "number":
-      return node.validators
-        ? { type: node.type, ...askConstraints(NUMBER_CONSTRAINTS, node.constraints, path, issues) }
-        : { type: node.type };
+      if (!node.validators) {
+        return { type: node.type };
+      }
+
+      if (node.limitChoices) {
+        const parseChoice = node.type === "integer" ? toInt : toNumber;
+
+        return generateEnum(node.type, node.choices, parseChoice, path, issues);
+      }
+
+      return {
+        type: node.type,
+        ...askConstraints(NUMBER_CONSTRAINTS, node.constraints, path, issues),
+      };
 
     case "boolean":
       return { type: "boolean" };
-
-    case "date":
-      return formatted("date");
-
-    case "datetime":
-      return formatted("date-time");
-
-    case "enum":
-      return generateEnum(node.choices, path, issues);
 
     case "array":
       return generateArray(node, path, issues);
@@ -165,27 +182,49 @@ export function generate(node: Node, path: string, issues: Issues): Schema {
 // utils
 // -----------------------
 
-/** A string limited to `choices`, an empty choice is skipped, a repeated one rejected. */
-function generateEnum(choices: string[], path: string, issues: Issues): Schema {
-  const unique: string[] = [];
+/**
+ * A `type` limited to `choices`, each parsed with `parseChoice`, like `_ask_choices`.
+ * An empty choice is skipped, an unparsable or repeated one rejected.
+ */
+function generateEnum(
+  type: string,
+  choices: string[],
+  parseChoice: (text: string) => unknown,
+  path: string,
+  issues: Issues,
+): Schema {
+  const unique: unknown[] = [];
 
   for (const [index, text] of choices.entries()) {
     const choice = text.trim();
 
-    if (unique.includes(choice)) {
+    if (!choice) {
+      continue;
+    }
+
+    let value: unknown;
+
+    try {
+      value = parseChoice(text);
+    } catch (e) {
+      issues[`${path}.choices.${index}`] = (e as Error).message;
+      continue;
+    }
+
+    if (unique.includes(value)) {
       issues[`${path}.choices.${index}`] = `Choice '${choice}' already exists`;
-    } else if (choice) {
-      unique.push(choice);
+    } else {
+      unique.push(value);
     }
   }
 
   if (unique.length === 0) {
     issues[`${path}.choices`] = "Add at least one choice";
 
-    return { type: "string" };
+    return { type };
   }
 
-  return { type: "string", enum: unique };
+  return { type, enum: unique };
 }
 
 /** Run `fn`, recording its error under `path` and returning `{}` instead. */
@@ -242,14 +281,18 @@ function generateString(
   path: string,
   issues: Issues,
 ): Schema {
+  if (node.format !== "none") {
+    return formatted(node.format);
+  }
+
   const schema: Schema = { type: "string" };
 
   if (!node.validators) {
     return schema;
   }
 
-  if (node.format !== "none") {
-    return formatted(node.format);
+  if (node.limitChoices) {
+    return generateEnum("string", node.choices, (text) => text.trim(), path, issues);
   }
 
   let constraints = STRING_CONSTRAINTS;

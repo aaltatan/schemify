@@ -3,9 +3,6 @@
   "types": [
     "array",
     "boolean",
-    "date",
-    "datetime",
-    "enum",
     "integer",
     "number",
     "object",

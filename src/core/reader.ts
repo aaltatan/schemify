@@ -98,9 +98,17 @@ function readNode(schema: Schema): Node {
 
     case "integer":
     case "number": {
+      if (Array.isArray(schema.enum)) {
+        return { ...newNode(schema.type), ...readChoices(schema.enum) } as Node;
+      }
+
       const constraints = answers(schema, NUMBER_CONSTRAINTS);
 
-      return { type: schema.type, validators: Object.keys(constraints).length > 0, constraints };
+      return {
+        ...newNode(schema.type),
+        validators: Object.keys(constraints).length > 0,
+        constraints,
+      } as Node;
     }
 
     case "boolean":
@@ -127,23 +135,20 @@ function readNode(schema: Schema): Node {
   }
 }
 
+/** The answers of a string or number limited to `choices`. */
+function readChoices(choices: unknown[]) {
+  return { validators: true, limitChoices: true, choices: choices.map(String) };
+}
+
 function readString(schema: Schema): Node {
-  if (schema.format === "date") {
-    return newNode("date");
-  }
-
-  if (schema.format === "date-time") {
-    return newNode("datetime");
-  }
-
-  if (Array.isArray(schema.enum)) {
-    return { type: "enum", choices: schema.enum.map(String) };
-  }
-
   const format = STRING_FORMATS.find((name) => name !== "none" && name === schema.format);
 
   if (format) {
-    return { ...newNode("string"), validators: true, format } as Node;
+    return { ...newNode("string"), format } as Node;
+  }
+
+  if (Array.isArray(schema.enum)) {
+    return { ...newNode("string"), ...readChoices(schema.enum) } as Node;
   }
 
   const digitsOnly = schema.pattern === DIGITS_ONLY || schema.pattern === OLD_DIGITS_ONLY;
@@ -154,12 +159,11 @@ function readString(schema: Schema): Node {
   }
 
   return {
-    type: "string",
+    ...newNode("string"),
     validators: digitsOnly || Object.keys(constraints).length > 0,
-    format: "none",
     digitsOnly,
     constraints,
-  };
+  } as Node;
 }
 
 function readObject(schema: Schema): ObjectNode {

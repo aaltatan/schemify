@@ -108,10 +108,7 @@ export function NodeEditor({ node, path, issues, onChange }: EditorProps<Node>) 
         : STRING_CONSTRAINTS;
 
       return (
-        <Validators
-          checked={node.validators}
-          onChange={(validators) => onChange({ ...node, validators })}
-        >
+        <div className="flex flex-col gap-4">
           <div className="sm:max-w-[calc(50%-0.375rem)]">
             <Field label="Format">
               <Select
@@ -123,22 +120,27 @@ export function NodeEditor({ node, path, issues, onChange }: EditorProps<Node>) 
             </Field>
           </div>
           {node.format === "none" && (
-            <>
-              <Check
-                label="Digits only"
-                checked={node.digitsOnly}
-                onChange={(digitsOnly) => onChange({ ...node, digitsOnly })}
-              />
-              <Constraints
-                constraints={constraints}
-                answers={node.constraints}
-                path={path}
-                issues={issues}
-                onChange={(answers) => onChange({ ...node, constraints: answers })}
-              />
-            </>
+            <Validators
+              checked={node.validators}
+              onChange={(validators) => onChange({ ...node, validators })}
+            >
+              <LimitChoices node={node} path={path} issues={issues} onChange={onChange}>
+                <Check
+                  label="Digits only"
+                  checked={node.digitsOnly}
+                  onChange={(digitsOnly) => onChange({ ...node, digitsOnly })}
+                />
+                <Constraints
+                  constraints={constraints}
+                  answers={node.constraints}
+                  path={path}
+                  issues={issues}
+                  onChange={(answers) => onChange({ ...node, constraints: answers })}
+                />
+              </LimitChoices>
+            </Validators>
           )}
-        </Validators>
+        </div>
       );
     }
 
@@ -149,24 +151,16 @@ export function NodeEditor({ node, path, issues, onChange }: EditorProps<Node>) 
           checked={node.validators}
           onChange={(validators) => onChange({ ...node, validators })}
         >
-          <Constraints
-            constraints={NUMBER_CONSTRAINTS}
-            answers={node.constraints}
-            path={path}
-            issues={issues}
-            onChange={(answers) => onChange({ ...node, constraints: answers })}
-          />
+          <LimitChoices node={node} path={path} issues={issues} onChange={onChange}>
+            <Constraints
+              constraints={NUMBER_CONSTRAINTS}
+              answers={node.constraints}
+              path={path}
+              issues={issues}
+              onChange={(answers) => onChange({ ...node, constraints: answers })}
+            />
+          </LimitChoices>
         </Validators>
-      );
-
-    case "enum":
-      return (
-        <ChoicesEditor
-          choices={node.choices}
-          path={path}
-          issues={issues}
-          onChange={(choices) => onChange({ ...node, choices })}
-        />
       );
 
     case "array":
@@ -211,7 +205,7 @@ export function NodeEditor({ node, path, issues, onChange }: EditorProps<Node>) 
       return <ObjectEditor node={node} path={path} issues={issues} onChange={onChange} />;
 
     default:
-      return null; // boolean, date and datetime ask nothing
+      return null; // boolean asks nothing
   }
 }
 
@@ -229,6 +223,35 @@ function Validators({
       <Check label="Add validators" checked={checked} onChange={onChange} />
       {checked && children}
     </div>
+  );
+}
+
+/** "Limit to choices": the choices replace the other validators in `children`, like Python. */
+function LimitChoices({
+  node,
+  path,
+  issues,
+  onChange,
+  children,
+}: EditorProps<Extract<Node, { limitChoices: boolean }>> & { children: ReactNode }) {
+  return (
+    <>
+      <Check
+        label="Limit to choices"
+        checked={node.limitChoices}
+        onChange={(limitChoices) => onChange({ ...node, limitChoices })}
+      />
+      {node.limitChoices ? (
+        <ChoicesEditor
+          choices={node.choices}
+          path={path}
+          issues={issues}
+          onChange={(choices) => onChange({ ...node, choices })}
+        />
+      ) : (
+        children
+      )}
+    </>
   );
 }
 
@@ -384,7 +407,7 @@ function PropertyCard({
   onRemove: () => void;
 }) {
   const name = property.name.trim() || "property";
-  const hasBody = !["boolean", "date", "datetime"].includes(property.node.type);
+  const hasBody = property.node.type !== "boolean";
 
   return (
     <section className="flex flex-col gap-4 rounded-[6px] border border-rule bg-sheet p-4 shadow-[0_1px_2px_oklch(0.2_0.05_258/0.06)]">

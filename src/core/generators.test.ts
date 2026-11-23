@@ -26,6 +26,11 @@ function property(name: string, node: Node, extra: Partial<Property> = {}): Prop
   return { ...newProperty(name), node, ...extra };
 }
 
+/** A string or number limited to `answers`. */
+function choices(type: "string" | "integer" | "number", ...answers: string[]): Node {
+  return { ...newNode(type), validators: true, limitChoices: true, choices: answers } as Node;
+}
+
 function object(...properties: Property[]): ObjectNode {
   return { type: "object", properties, extraProperties: false };
 }
@@ -64,27 +69,20 @@ describe("primitives", () => {
 
   it("asks no questions", () => {
     expect(run(newNode("boolean")).schema).toEqual({ type: "boolean" });
-    expect(run(newNode("date")).schema).toEqual({
-      type: "string",
-      format: "date",
-      pattern: FORMAT_PATTERNS.date,
-    });
-    expect(run(newNode("datetime")).schema).toEqual({
-      type: "string",
-      format: "date-time",
-      pattern: FORMAT_PATTERNS["date-time"],
-    });
   });
 
-  it("returns a string format alone", () => {
-    const node: Node = { ...newNode("string"), validators: true, format: "email" } as Node;
+  it.each(["date", "date-time", "email", "uuid"] as const)(
+    "returns the %s string format alone",
+    (format) => {
+      const node = { ...newNode("string"), format } as Node;
 
-    expect(run(node).schema).toEqual({
-      type: "string",
-      format: "email",
-      pattern: FORMAT_PATTERNS.email,
-    });
-  });
+      expect(run(node).schema).toEqual({
+        type: "string",
+        format,
+        pattern: FORMAT_PATTERNS[format],
+      });
+    },
+  );
 
   it("parses string validators and rejects a bad one", () => {
     const answers = { minLength: "x", maxLength: "10", pattern: "^[a-z]+$", not: "root, admin" };
@@ -114,7 +112,7 @@ describe("primitives", () => {
 
   it("rejects a conflicting bound", () => {
     const answers = { minimum: "10", exclusiveMaximum: "1", multipleOf: "0.5" };
-    const node: Node = { type: "number", validators: true, constraints: answers };
+    const node = { ...newNode("number"), validators: true, constraints: answers } as Node;
 
     expect(run(node)).toEqual({
       schema: { type: "number", minimum: 10, multipleOf: 0.5 },
@@ -122,16 +120,26 @@ describe("primitives", () => {
     });
   });
 
-  it("parses enum choices", () => {
-    expect(run({ type: "enum", choices: [" red ", "", "green, blue"] }).schema).toEqual({
+  it("parses string choices", () => {
+    expect(run(choices("string", " red ", "", "green, blue")).schema).toEqual({
       type: "string",
       enum: ["red", "green, blue"],
     });
-    expect(run({ type: "enum", choices: ["red", " red "] }).issues).toEqual({
+    expect(run(choices("string", "red", " red ")).issues).toEqual({
       "root.choices.1": "Choice 'red' already exists",
     });
-    expect(run({ type: "enum", choices: [""] }).issues).toEqual({
+    expect(run(choices("string", "")).issues).toEqual({
       "root.choices": "Add at least one choice",
+    });
+  });
+
+  it("parses number choices and rejects a bad one", () => {
+    expect(run(choices("integer", "x", "1", "2", " 2 "))).toEqual({
+      schema: { type: "integer", enum: [1, 2] },
+      issues: {
+        "root.choices.0": "'x' is not an integer",
+        "root.choices.3": "Choice '2' already exists",
+      },
     });
   });
 });
@@ -156,7 +164,7 @@ describe("containers", () => {
 
   it("builds an object with a nested array of objects", () => {
     const tag = {
-      ...object(property("label", { type: "enum", choices: ["a", "b"] })),
+      ...object(property("label", choices("string", "a", "b"))),
       extraProperties: true,
     };
     const node = object(
@@ -231,7 +239,7 @@ describe("defaults", () => {
 
 describe("issues", () => {
   it("checks the answers of a property without a name", () => {
-    const node: Node = { type: "number", validators: true, constraints: { minimum: "x" } };
+    const node = { ...newNode("number"), validators: true, constraints: { minimum: "x" } } as Node;
 
     expect(run(object(property("", node))).issues).toEqual({
       "root.0.name": "Enter a property name",
